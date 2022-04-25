@@ -121,6 +121,7 @@ export const ResourceList = ({initialResources, sub, subHandler, user, clearActi
         orderBy(
             resources
                 .filter(r => onlyWarsaw ? isInWarsaw(r) : true)
+                .filter(r => !r.is_suspend)
                 .filter(r => onlyAvailable ? isAvailable(r) : true)
                 .filter(r => peopleFilter ? peopleFilter.includes(r.people_to_accommodate) : true)
                 .filter(r => statusFilter ? statusFilter.includes(r.resource) : true)
@@ -224,8 +225,7 @@ export const ResourceList = ({initialResources, sub, subHandler, user, clearActi
         <div className="resource-list-table mx-2">
           <div className={"column-headers mt-3"}>
             <div className={"col dol-head r-id-col"}>ID</div>
-            {Object.values(columnsData).map(colData => <
-                ColumnHeader col={colData} key={colData.fieldName} sortHandler={handleSort}
+            {Object.values(columnsData).map(colData => <ColumnHeader col={colData} key={colData.fieldName} sortHandler={handleSort}
                             sortDirection={sortOrder} isSorting={sortBy === colData.fieldName}
                             filterData={filters[colData.fieldName]}
             />)}

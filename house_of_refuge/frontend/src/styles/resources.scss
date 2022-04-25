@@ -85,8 +85,8 @@ a {
 .tr-host {
   td,
   th {
-    border-color: black;
-    background-color: azure;
+    border: none;
+    background-color: $our-green;
   }
 }
 
@@ -373,6 +373,11 @@ a {
 .sub-searching {
   background-color: $our-yellow !important;
   border-color: $our-yellow;
+}
+
+.sub-suspend {
+  background-color: $our-red !important;
+  border-color: $our-red;
 }
 
 .coordinators {

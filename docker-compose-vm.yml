@@ -1,0 +1,46 @@
+version: '3.7'
+
+services:
+#  postgres:
+#    image: postgres:14
+#    environment:
+#      POSTGRES_USER: postgres
+#      POSTGRES_PASSWORD: postgres
+#      POSTGRES_DB: house_of_refuge
+#    volumes:
+#      - ./pg_data:/var/lib/postgresql/data
+#    ports:
+#      - "5432:5432"
+#    restart: unless-stopped
+
+  redis:
+    image: redis:6
+#    ports:
+#      - "6379:6379"
+    restart: unless-stopped
+
+  app:
+    image: europe-central2-docker.pkg.dev/ukrainskidom-backoffice/apps/mieszkania-app:latest
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+    environment:
+      HOST: "0.0.0.0"
+      PORT: "8080"
+      DATABASE_URL: ${DATABASE_URL}
+      DJANGO_SECRET_KEY: ${SECRET_KEY}
+      WEB_CONCURRENCY: "10"
+      DJANGO_SETTINGS_MODULE: "config.settings.production"
+      REDIS_URL: "redis://redis:6379"
+      DJANGO_ALLOWED_HOSTS: ${BASE_URL}
+      RENDER_EXTERNAL_HOSTNAME: ${BASE_URL}
+      BASE_URL: ${BASE_URL}
+      DJANGO_ADMIN_URL: ${DJANGO_ADMIN_URL}
+      MAILGUN_DOMAIN: "a"
+      MAILGUN_API_KEY: "a"
+      SENTRY_DSN: ${SENTRY_DSN}
+      DJANGO_SECURE_SSL_REDIRECT: "False"
+    entrypoint: ["/bin/bash", "-c"]
+    command: ["python manage.py migrate && gunicorn config.wsgi:application -t 60"]
+    depends_on:
+      - redis

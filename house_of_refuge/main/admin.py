@@ -38,9 +38,32 @@ class HousingResourceAdmin(ModelAdmin):
 
 
 class HousingRow(resources.ModelResource):
+
+    def skip_row(self, instance, original):
+        standard_fields_are_same = all([
+            instance.email == original.email,
+            instance.people_to_accommodate_raw == original.people_to_accommodate_raw,
+            instance.extra == original.extra,
+            instance.availability == original.availability,
+        ])
+        status_change_to_ignore = all([
+            original.status == Status.NEW,
+            instance.status == Status.IGNORE
+        ])
+
+        if standard_fields_are_same and status_change_to_ignore:
+            return super().skip_row(instance, original)
+        elif standard_fields_are_same:
+            return True
+        else:
+            return super().skip_row(instance, original)
+
     class Meta:
         model = HousingResource
         exclude = ("token", )
+        skip_unchanged = True
+        report_skipped = True
+        import_id_fields = ["id"]
 
 
 @admin.action(description=_('Mark for deletion'))

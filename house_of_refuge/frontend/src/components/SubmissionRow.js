@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {Button, Dropdown, Table} from "react-bootstrap";
-import {getCookie, getPickUpDisplay, SUB_STATE_OPTIONS} from "../scripts/utils";
+import {getCookie, SUB_STATE_OPTIONS} from "../scripts/utils";
 import Select from "react-dropdown-select";
 import {EditableField} from "./Shared";
 import {toast} from "react-toastify";
@@ -103,8 +103,21 @@ export function SubmissionRow({sub, activeHandler, user, isGroupCoordinator, isA
 
     const newStatus = value[0].value;
     if (newStatus !== localSub.status) {
-      updateSub(localSub, {"status": newStatus}, () => setStatus(newStatus));
-      setLocalSub((s) => ({...s, status: newStatus}));
+
+    if (isActive === true) {
+      updateSub(localSub, {"status": newStatus, matcher: null}, () => {
+        setStatus(newStatus)
+        setLocalSub((s) => ({...s, status: newStatus, matcher: null}));
+        activeHandler(sub, true, false)
+      });
+    } else {
+      updateSub(localSub, {"status": newStatus}, () => {
+        setStatus(newStatus)
+        setLocalSub((s) => ({...s, status: newStatus}));
+      });
+    }
+
+
     } else {
 
     }
@@ -143,6 +156,9 @@ export function SubmissionRow({sub, activeHandler, user, isGroupCoordinator, isA
   const getStatusClass = (sub) => {
    if (sub.status === "in_progress" && sub.resource?.will_pick_up_now) {
      return "sub-in-progress-host-coming";
+   }
+   if (sub.is_suspend === true) {
+     return "sub-suspend";
    }
     return `sub-${localSub.status.replace("_", "-")}`;
   };
@@ -216,13 +232,21 @@ export function SubmissionRow({sub, activeHandler, user, isGroupCoordinator, isA
       </tr>
       {localSub.resource && <tr className="tr-host">
         <th>HOST</th>
-        <td>{localSub.resource.name}</td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td colSpan={3}></td>
+      </tr>}
+      {localSub.resource && <tr className="tr-host">
+        <th>Kontakt host:</th>
+        <td >{localSub.resource.name} ({localSub.resource.phone_number})</td>
+        <th>Adres hosta:</th>
         <td>{localSub.resource.address}</td>
-        <td>{localSub.resource.phone_number}</td>
-        <td>{getPickUpDisplay(localSub.resource.will_pick_up_now)}</td>
+        <th>Notatka:</th>
         <td colSpan={3}>{localSub.resource.note}</td>
       </tr>}
-      <tr>
+      <tr className={localSub.resource?"tr-host":""}>
         <th>Osoba zgłaszająca</th>
         <td>{localSub.receiver?.display || localSub.contact_person}</td>
         <th>{["searching", "new"].includes(localSub.status) ? "Hosta szuka" : "Host znaleziony przez"}</th>
@@ -237,7 +261,14 @@ export function SubmissionRow({sub, activeHandler, user, isGroupCoordinator, isA
               values={SUB_STATE_OPTIONS.filter((o) => o.value === status)}
               options={SUB_STATE_OPTIONS}
               onChange={updateStatus}
-          /> : getStatusDisplay(status)}
+          /> : (isActive? <Select
+              values={SUB_STATE_OPTIONS.filter((o) => o.value === status)}
+              options={SUB_STATE_OPTIONS.filter((o) =>
+                  (o.value === status || o.value === 'contact_attempt'))
+              }
+              onChange={updateStatus}
+          />: getStatusDisplay(status))
+          }
         </td>
       </tr>
       {isCoordinator && !isGroupAdmin && statusAsNumber(localSub.status) < 3 && <tr>

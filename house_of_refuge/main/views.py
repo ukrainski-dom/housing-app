@@ -12,8 +12,9 @@ from django.shortcuts import render
 from django.template.loader import get_template
 from django.utils import timezone
 from django.utils.translation import gettext as _
-from django.views.decorators.csrf import ensure_csrf_cookie
+from django.views.decorators.csrf import ensure_csrf_cookie, csrf_exempt
 from django.views.decorators.http import require_http_methods
+from model_utils.models import TimeStampedModel
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.generics import get_object_or_404
@@ -108,7 +109,7 @@ def resource_match_found(request):
             "object": sub.as_prop(),
         }, status=400)
     sub.resource = resource
-    sub.status = SubStatus.IN_PROGRESS
+    sub.status = SubStatus.SUCCESS
     sub.save()
 
     ObjectChange.objects.create(
@@ -118,7 +119,7 @@ def resource_match_found(request):
 
     return JsonResponse({
         "status": "success",
-        "message": _("Yay!"),
+        "message": "Właśnie znalazłeś komuś dom - gratulacje!!",
         "object": sub.as_prop()}
     )
 
@@ -169,6 +170,7 @@ def create_submission(request):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+@csrf_exempt
 @api_view(['POST', 'PUT', "DELETE"])
 def create_resource(request):
     if request.method == "POST":
@@ -205,6 +207,24 @@ def create_resource(request):
         return Response({}, status=status.HTTP_204_NO_CONTENT)
 
 
+@csrf_exempt
+@api_view(['POST'])
+def create_resource_integration(request, uuid):
+    resource = HousingResource(**json.loads(request.body))
+    resource.save()
+    return Response(status=status.HTTP_201_CREATED)
+
+
+@csrf_exempt
+@api_view(['POST'])
+def create_submission_integration(request, uuid):
+    sub = Submission(**json.loads(request.body))
+    super(TimeStampedModel, sub).save()
+    sub.refresh_from_db()
+    sub.save()
+    return Response(status=status.HTTP_201_CREATED)
+
+
 @require_http_methods(["POST"])
 @transaction.atomic
 def update_sub(request, sub_id):
@@ -237,6 +257,8 @@ def update_sub(request, sub_id):
 
         elif field == "status" and value in [SubStatus.GONE, SubStatus.CANCELLED]:
             sub.handle_gone()
+        elif field == "status" and value == SubStatus.CONTACT_ATTEMPT:
+            sub.handle_contact_attempt()
         elif field == "when":
             date_value = datetime.datetime.strptime(value, "%Y-%m-%d")
             sub.when = date_value
@@ -253,7 +275,7 @@ def update_sub(request, sub_id):
 @api_view(['POST'])
 @transaction.atomic
 def update_resource(request, resource_id):
-    resource = HousingResource.objects.get(id=resource_id)
+    resource = HousingResource.objects.select_for_update().get(id=resource_id)
     serializer = HousingResourceSerializer(instance=resource, data=request.data['fields'], partial=True)
     if serializer.is_valid():
         serializer.save()
@@ -261,7 +283,7 @@ def update_resource(request, resource_id):
             user=request.user, host=resource,
             change=f"update: {request.data['fields']}"
         )
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return JsonResponse({"data": resource.as_prop(), "message": "Updated", "status": "success", })
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 

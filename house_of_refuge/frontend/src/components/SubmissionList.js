@@ -1,15 +1,15 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
-import { SUB_STATE_OPTIONS } from "../scripts/utils";
-import { ToastContainer } from "react-toastify";
+import React, {useEffect, useMemo, useRef, useState} from "react";
+import {SUB_STATE_OPTIONS} from "../scripts/utils";
+import {ToastContainer} from "react-toastify";
 import Select from "react-dropdown-select";
 import BootstrapSwitchButton from "bootstrap-switch-button-react";
-import { Search } from "react-bootstrap-icons";
-import { LoadingSpinner } from "./Shared";
-import { SubmissionRow } from "./SubmissionRow";
-import { ResourceRow } from "./ResourceRow";
-import { orderBy } from "lodash";
-import { QuickFilter } from "./QuickFilter";
-import { Pagination } from "react-bootstrap";
+import {Search} from "react-bootstrap-icons";
+import {LoadingSpinner} from "./Shared";
+import {SubmissionRow} from "./SubmissionRow";
+import {ResourceRow} from "./ResourceRow";
+import {orderBy} from "lodash";
+import {QuickFilter} from "./QuickFilter";
+import {Pagination} from "react-bootstrap";
 
 export const SOURCE_OPTIONS = [
   { label: "Strona", value: "webform" },
@@ -79,8 +79,8 @@ export const SubmissionList = (
       ).filter(s => todayFilterValue ? s.is_today : true
       ).filter(s => activeNow ? !s.accomodation_in_the_future : true
       ).filter(s => peopleFilter.length ? peopleFilter.map(o => o.value).includes(s.people_count) : true
-      ).filter(s => searchQuery ? Object.values(s).join(' ').toLowerCase().search(searchQuery) > -1 : true),
-      ["priority", "id"], ["desc", "asc"])
+      ).filter(s => searchQuery ? (Object.values(s).join(' ')).toLowerCase().indexOf(searchQuery) > -1 : true),
+      ["is_suspend", "priority", "created_raw"], ["asc", "desc", "desc"])
     );
   }, [sourceFilter, todayFilterValue, peopleFilter, activeNow, statusFilter, subs, searchQuery, userFilterValue]);
 

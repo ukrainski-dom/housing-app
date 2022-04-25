@@ -70,6 +70,8 @@ celerybeat-schedule
 venv/
 ENV/
 
+pg_data/
+
 # Rope project settings
 .ropeproject
 

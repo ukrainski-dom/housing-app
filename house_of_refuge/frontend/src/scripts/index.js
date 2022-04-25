@@ -183,7 +183,11 @@ const App = ({subs, userData, coordinators, helped}) => {
         const newSubs = result.data.submissions;
         const newSubsIds = newSubs.map(s => s.id);
 
-
+        const regExp = /\s/g;
+        newSubs.forEach(el => {
+          el.created_raw = new Date(el.created_raw)
+          el.phone_number_clean = el.phone_number.replace(regExp, '')
+        })
         setSubmissions((cS) => [...cS.filter(s => !newSubsIds.includes(s.id)), ...newSubs]);
         // do latest for dropped
         setDroppedHosts(result.data.dropped);

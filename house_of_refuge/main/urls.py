@@ -36,6 +36,9 @@ urlpatterns = [
     path("api/zglos", views.create_submission, name="zgloszenie_create"),
     path("api/stworz_zasob", views.create_resource, name="zasob_create"),
 
+    path("api/stworz_zasob_integration/<str:uuid>", views.create_resource_integration, name="zasob_create_integration"),
+    path("api/zglos_integration/<str:uuid>", views.create_submission_integration, name="zgloszenie_create_integration"),
+
     path("api/match_found", views.resource_match_found, name="match_found"),
     path("api/sub/update/<int:sub_id>", views.update_sub, name="sub_update"),
     path("api/check_limit", views.check_submission_limit, name="check_limit"),

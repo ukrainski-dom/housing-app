@@ -1,11 +1,9 @@
 import datetime
-import re
-from secrets import token_urlsafe
 
 from django.conf import settings
-from django.db import models
 from django.contrib.auth import get_user_model
-from django.db.models import Manager, Q, Count
+from django.db import models
+from django.db.models import Manager, Q
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.crypto import get_random_string
@@ -15,7 +13,6 @@ from django.utils.translation import gettext_lazy as _, gettext
 from markdownx.models import MarkdownxField
 from markdownx.utils import markdownify
 from model_utils.models import TimeStampedModel
-
 # Create your models here.
 from solo.models import SingletonModel
 
@@ -44,6 +41,7 @@ class Status(models.TextChoices):
     CALLING = "calling", _("Calling")
     IGNORE = "ignore", _("Ignore")
     SHOULD_DELETE = "should_delete", _("For deletion")
+    CONTACT_ATTEMPT = "contact_attempt", _("Próba kontaktu")
 
 
 class HousingResourceManager(Manager):
@@ -246,6 +244,9 @@ class HousingResource(TimeStampedModel):
         verbose_name=_("Token"),
     )
 
+    suspend_till = models.DateField(null=True, blank=True)
+    contact_attempts = models.PositiveSmallIntegerField(default=0, null=False, blank=False)
+
     objects = HousingResourceManager()
 
     def __str__(self):
@@ -339,6 +340,17 @@ class HousingResource(TimeStampedModel):
             owner=self.owner.as_json() if self.owner else None,
         )
 
+    def save(self, *args, **kwargs):
+        if self.status == Status.CONTACT_ATTEMPT:
+            if self.contact_attempts < 5:
+                self.suspend_till = (timezone.now() + datetime.timedelta(days=1)).date()
+                self.contact_attempts = self.contact_attempts + 1
+                self.status = Status.NEW
+            else:
+                self.status = Status.IGNORE
+
+        return super(HousingResource, self).save(*args, **kwargs)
+
     def as_prop(self):
         return dict(
             id=self.id,
@@ -375,6 +387,7 @@ class HousingResource(TimeStampedModel):
             note=self.note,
             compact_display=self.compact_display,
             owner=self.owner.as_json() if self.owner else None,
+            is_suspend=timezone.now().date() < self.suspend_till if self.suspend_till else False,
         )
 
 
@@ -392,6 +405,7 @@ class SubStatus(models.TextChoices):
     GONE = "gone", _("Gone")
     SUCCESS = "success", _("Success")
     CANCELLED = "cancelled", _("Cancelled")
+    CONTACT_ATTEMPT = "contact_attempt", _("Próba kontaktu")
 
 
 END_OF_DAY = 5
@@ -568,6 +582,8 @@ class Submission(TimeStampedModel):
         verbose_name=_("Finished at"),
     )
 
+    suspend_till = models.DateField(null=True, blank=True)
+    contact_attempts = models.PositiveSmallIntegerField(default=0, null=False, blank=False)
     # TODO: add last status update?
 
     objects = SubmissionManager()
@@ -615,6 +631,16 @@ class Submission(TimeStampedModel):
             when = self.when.date() if isinstance(self.when, datetime.datetime) else self.when
             return when > get_our_today_cutoff()
         return False
+
+    def handle_contact_attempt(self):
+        if self.contact_attempts < 5:
+            self.status = SubStatus.NEW
+            self.suspend_till = (timezone.now() + datetime.timedelta(days=1)).date()
+            self.contact_attempts = self.contact_attempts + 1
+        else:
+            self.status = SubStatus.CANCELLED
+
+        self.save()
 
     def clear_resource(self):
         self.resource.owner = None
@@ -689,6 +715,7 @@ class Submission(TimeStampedModel):
             created = str(self.created.astimezone(timezone.get_default_timezone()))
         return dict(
             id=self.id,
+            created_raw=self.created,
             created=created,
             name=self.name,
             phone_number=get_phone_number_display(self.phone_number),
@@ -713,6 +740,7 @@ class Submission(TimeStampedModel):
             traveling_with_pets=self.traveling_with_pets,
             can_stay_with_pets=self.can_stay_with_pets,
             resource=self.resource.sub_representation() if self.resource else None,
+            is_suspend=timezone.now().date() < self.suspend_till if self.suspend_till else False,
         )
 
 

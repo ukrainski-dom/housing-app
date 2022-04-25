@@ -1,7 +1,6 @@
 import React, {useEffect, useState} from "react";
-import {Button, ButtonGroup, Dropdown, Modal, Table} from "react-bootstrap";
+import {Button, ButtonGroup, Modal, Table} from "react-bootstrap";
 import {getCookie, getPickUpDisplay, updateResource} from "../scripts/utils";
-import Select from "react-dropdown-select";
 import {EditableField} from "./Shared";
 import {SubmissionRow} from "./SubmissionRow";
 
@@ -23,6 +22,10 @@ const MatchModal = ({showModal, handleClose, matchHandle, resource, activeSub}) 
   };
 
   const noAnswer = () => {
+    updateResource(resource, {status: "contact_attempt", owner: null}, () => handleClose());
+  };
+
+  const close = () => {
     updateResource(resource, {status: "new", owner: null}, () => handleClose());
   };
 
@@ -44,25 +47,14 @@ const MatchModal = ({showModal, handleClose, matchHandle, resource, activeSub}) 
     <Modal.Body className={"text-center"}>
       <SubmissionRow sub={activeSub} isActive={true} readOnly={true} user={resource.owner || {}}/>
       <ResourceRow resource={resource} isExpanded={true} isCoordinator={false} compact={true}/>
-      <h5 className={"mt-4"}>Od Kiedy host będzie znów dostępny?</h5>
+      <h6>Od kiedy host będzie znów dostępny?</h6>
+      <h6>( Kiedy raz jeszcze możemy do Pani/Pana przedzwonić? )</h6>
       <div style={{margin: "30px"}}>
         <input required type="date" min={new Date().toJSON().slice(0, 10)} value={dateSet}
                onChange={handleDateChange}/>
       </div>
-      {success ?
-          <><h5>Co z transportem?</h5>
-            <div className="transport-btns">
-              <Button variant="info" disabled={!dateSet} onClick={() => match(true)}>
-                Host zorganizuje transport
-              </Button>
-              <Button variant="warning" className={"mb-0"} disabled={!dateSet} onClick={() => match(false)}>
-                My musimy ogarnąć transport
-              </Button>
-            </div>
-          </>
-          :
-          <div className={"host-call-buttons"}>
-            <Button variant="success" disabled={!dateSet} onClick={() => setSuccess(true)}>
+      {   <div className={"host-call-buttons"}>
+            <Button variant="success" disabled={!dateSet} onClick={() => match(true)}>
               Zgodził się wziąć!
             </Button>
             <Button variant="warning" disabled={!dateSet} onClick={notToday}>
@@ -71,15 +63,15 @@ const MatchModal = ({showModal, handleClose, matchHandle, resource, activeSub}) 
           </div>
       }
     </Modal.Body>
-    <Modal.Footer className={"justify-content-around"}>
+    <Modal.Footer className={"justify-content-around"} >
       <Button variant="danger" onClick={() => setSuccess(toIgnore)}>
         Do wywalenia
       </Button>
-      {success && <Button className={"mx-auto"} variant="secondary" onClick={() => setSuccess(false)}>
-        wróć
-      </Button>}
-      <Button variant="secondary" onClick={noAnswer}>
-        Nie odbiera / Cancel
+      <Button className={"mx-auto"} variant="secondary" onClick={noAnswer}>
+        Nie odbiera
+      </Button>
+      <Button variant="secondary" onClick={close}>
+        Wróć
       </Button>
     </Modal.Footer>
   </Modal>);
@@ -211,7 +203,8 @@ export const ResourceRow = ({resource, isExpanded, onMatch, user, activeSub, com
           <th>Coś o sobie</th>
           <td>{resource.about_info}</td>
           <th>Języki</th>
-          <td>{resource.languages}</td>
+          {/* FIXME: workaround to use unused languages field as call hint */}
+          <td></td>
           <th>Kiedy można dzwonić?</th>
           <td>{resource.when_to_call}</td>
         </tr>
@@ -224,7 +217,7 @@ export const ResourceRow = ({resource, isExpanded, onMatch, user, activeSub, com
           <td>{resource.can_take_person_with_pets}</td>
         </tr>
         <tr>
-          <th>Dodatkowe uwagi</th>
+          <th>Ile osób?</th>
           <td>{resource.extra}</td>
           <th>Transport</th>
           <td>{resource.transport}</td>
@@ -234,8 +227,9 @@ export const ResourceRow = ({resource, isExpanded, onMatch, user, activeSub, com
         <tr>
           <th>Telefon</th>
           <td>{resource.phone_number}</td>
-          <th>Telefon awaryjny</th>
-          <td>{resource.backup_phone_number}</td>
+          <th>Uwagi do telefonu:</th>
+          {/* FIXME: workaround to support call hints */}
+          <td>{resource.languages}</td>
           <th>Email</th>
           <td>{resource.email}</td>
         </tr>
