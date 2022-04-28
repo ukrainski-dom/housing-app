@@ -32,31 +32,30 @@ If you just want to help and contribute to this repository, please fork it and c
 
 ## Setting up local development
 
-1. Fork and clone this repository
-2. You need a local postgres server (either 13 or 14 version is fine), if you're on Mac we recommend using [Postgress.app](https://postgresapp.com/)
+1. You need a local postgres server and redis (either 13 or 14 version is fine). You can use [docker-compose.yml](docker-compose.yml)
    ```
-   createdb --username=postgres house_of_refuge
+   docker-compose up -d
    ```
-3. Create local python environment and install dependencies
+2. Create local python environment, activate in terminal session and install dependencies
    ```
    python -m venv venv
-   . ./venv/bin/activate
+   source ./venv/bin/activate
    pip install -r requirements/local.txt
    ```
-4. Build React frontend
+3. Build React frontend
    ```
-   cd house_of_refuge/frontend
-   npm install
-   npm start
+   npm install --prefix house_of_refuge/frontend
+   npm run build --prefix house_of_refuge/frontend && python manage.py collectstatic --no-input
    ```
-5. Run migrations, compile translations, create local data and start dev server
+4. Run migrations, compile translations, create local data and start dev server
    ```
    python manage.py migrate
-   python manage.py compilemessages
+   django-admin compilemessages
    python manage.py generate_local_data
    python manage.py createsuperuser
    python manage.py runserver_plus
    ```
+5. You have server up and running. You can go to: [http://localhost:8000](http://localhost:8000).
 
 ## Settings
 
