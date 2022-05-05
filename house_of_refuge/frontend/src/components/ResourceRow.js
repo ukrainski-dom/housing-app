@@ -175,7 +175,7 @@ export const ResourceRow = ({resource, isExpanded, onMatch, user, activeSub, com
       default:
         return resource.status;
     }
-  }
+  };
 
   const openHost = () => {
     if (isTaken()) {
