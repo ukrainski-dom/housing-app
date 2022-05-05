@@ -6,7 +6,7 @@ import {SubmissionRow} from "./SubmissionRow";
 
 export const shortCols = ["people_to_accommodate"];
 
-const MatchModal = ({showModal, handleClose, matchHandle, resource, activeSub}) => {
+const MatchModal = ({showModal, handleClose, matchHandle, resource, activeSub, user}) => {
 
   const [dateSet, setDateSet] = useState(null);
   const [success, setSuccess] = useState(false);
@@ -25,8 +25,16 @@ const MatchModal = ({showModal, handleClose, matchHandle, resource, activeSub}) 
     updateResource(resource, {status: "contact_attempt", owner: null}, () => handleClose());
   };
 
+  const bookHost = () => {
+    updateResource(resource, {status: "booked", owner: user.id});
+  };
+
   const close = () => {
-    updateResource(resource, {status: "new", owner: null}, () => handleClose());
+    if (resource.status !== "booked") {
+      updateResource(resource, {status: "new", owner: null}, () => handleClose());
+      return;
+    }
+    handleClose();
   };
 
   const notToday = () => {
@@ -56,6 +64,9 @@ const MatchModal = ({showModal, handleClose, matchHandle, resource, activeSub}) 
       {   <div className={"host-call-buttons"}>
             <Button variant="success" disabled={!dateSet} onClick={() => match(true)}>
               Zgodził się wziąć!
+            </Button>
+            <Button disabled={resource.status==="booked"} onClick={bookHost}>
+              Rezerwacja czasowa
             </Button>
             <Button variant="warning" disabled={!dateSet} onClick={notToday}>
               Nie weźmie
@@ -149,6 +160,31 @@ export const ResourceRow = ({resource, isExpanded, onMatch, user, activeSub, com
     setAvailableFrom(newDate);
   };
 
+  const isTaken = () => {
+    return (resource.status  === "calling" || resource.status === "booked");
+  };
+
+  const showStatus = () => {
+    switch (resource.status) {
+      case "calling":
+        return "dzwoni ".concat(resource.owner.display);
+      case "booked":
+        return "rezerwacja ".concat(resource.owner.display);
+      case "new":
+        return "nowy";
+      default:
+        return resource.status;
+    }
+  }
+
+  const openHost = () => {
+    if (isTaken()) {
+      setShowModal(true);
+      return;
+    }
+    updateResource(resource, {status: "calling", owner: user.id}, () => setShowModal(true));
+  };
+
   if (hide) {
     return <></>;
   }
@@ -235,21 +271,25 @@ export const ResourceRow = ({resource, isExpanded, onMatch, user, activeSub, com
         </tr>
         <tr>
           <th>Notatka</th>
-          {compact ? <td><EditableField value={note} onRename={updateNote}/></td> : <>
-            <td><EditableField value={note} onRename={updateNote}/></td>
-            <td className={"text-center"}>{getReadyDisplay(resource)}</td>
-            <td className={"text-center"} colSpan="3">
-              <Button size={"sm"}
-                      disabled={resource.status === "calling" && resource.owner.id !== user.id}
-                      onClick={() => {
-                        updateResource(
-                            resource, {status: "calling", owner: user.id},
-                            () => setShowModal(true));
-                      }}>
-                {resource.status === "calling" ? `DZWONI ${resource.owner?.display}` : "DZWONIĘ"}
-              </Button>
-            </td>
-          </>}
+          <td><EditableField value={note} onRename={updateNote}/></td>
+
+          <th>Status</th>
+          <td>{showStatus()}</td>
+
+          {compact ?
+              <s/>
+              :
+              <>
+                <td className={"text-center"}>{getReadyDisplay(resource)}</td>
+                <td className={"text-center"}>
+                  <Button size={"sm"}
+                          disabled={isTaken() && resource.owner.id !== user.id}
+                          onClick={openHost}>
+                    {isTaken() ? `DZWONI ${resource.owner?.display}` : "DZWONIĘ"}
+                  </Button>
+                </td>
+              </>
+          }
         </tr>
         </tbody>
       </Table>
@@ -257,7 +297,7 @@ export const ResourceRow = ({resource, isExpanded, onMatch, user, activeSub, com
     </div>}
     {!compact &&
         <MatchModal showModal={showModal} handleClose={() => setShowModal(false)} resource={resource}
-                    matchHandle={onMatch} activeSub={activeSub}/>
+                    matchHandle={onMatch} activeSub={activeSub} user={user}/>
     }
   </div>;
 };

@@ -21,6 +21,8 @@ export const shouldShowHost = (resource, userId) => {
     return true;
   } else if (resource.status === "calling") {
     return true;
+  } else if (resource.status === "booked") {
+    return true;
   }
   return false;
 };
