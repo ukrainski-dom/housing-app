@@ -692,8 +692,7 @@ class Submission(TimeStampedModel):
         self.status = SubStatus.CANCELLED
         if self.resource:
             self.resource.is_dropped = True
-            self.resource.note += format(
-                "\n{}: {}; {}: {}",
+            self.resource.note += "\n{}: {}; {}: {}".format(
                 gettext("Dropped from submission"),
                 self.id,
                 gettext("Host found by"),
@@ -701,8 +700,7 @@ class Submission(TimeStampedModel):
             )
             self.clear_resource()
             self.resource = None
-        self.note += format(
-            "\n{}: {}",
+        self.note += "\n{}: {}".format(
             gettext("Dropped at"),
             timezone.now().strftime("%Y-%m-%d %H:%M:%S"),
         )

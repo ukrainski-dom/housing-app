@@ -105,7 +105,7 @@ def resource_match_found(request):
     if sub.matcher != request.user:
         return JsonResponse({
             "status": "error",
-            "message": format(_("This submission is already processed by {matcher}!"), matcher=sub.matcher),
+            "message": (_("This submission is already processed by {matcher}!")).format(matcher=sub.matcher),
             "object": sub.as_prop(),
         }, status=400)
     sub.resource = resource
