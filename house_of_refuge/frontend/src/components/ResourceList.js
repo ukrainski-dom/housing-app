@@ -125,7 +125,7 @@ export const ResourceList = ({initialResources, sub, subHandler, user, clearActi
                 .filter(r => statusFilter ? statusFilter.includes(r.resource) : true)
                 .filter(r => hotTopic ? isHot(r) : true)
                 .filter(r => turtleFilter ? r.turtle : true)
-                .filter(r => searchQuery ? ResourceAsStringForSearch(r).search(searchQuery) > -1 : true),
+                .filter(r => searchQuery ? ResourceAsStringForSearch(r).indexOf(searchQuery) > -1 : true),
             [sortBy, "id"], [sortOrder, "asc"]));
   }, [onlyWarsaw, onlyAvailable, peopleFilter, statusFilter, hotTopic, searchQuery, turtleFilter, resources]);
 
