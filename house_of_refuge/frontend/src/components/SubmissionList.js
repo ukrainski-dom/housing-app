@@ -5,6 +5,8 @@ import Select from "react-dropdown-select";
 import BootstrapSwitchButton from "bootstrap-switch-button-react";
 import {Search} from "react-bootstrap-icons";
 import {LoadingSpinner} from "./Shared";
+import {PrepareSearchQuery} from "./Shared";
+import {ResourceAsStringForSearch} from "./Shared";
 import {SubmissionRow} from "./SubmissionRow";
 import {ResourceRow} from "./ResourceRow";
 import {orderBy} from "lodash";
@@ -79,7 +81,7 @@ export const SubmissionList = (
       ).filter(s => todayFilterValue ? s.is_today : true
       ).filter(s => activeNow ? !s.accomodation_in_the_future : true
       ).filter(s => peopleFilter.length ? peopleFilter.map(o => o.value).includes(s.people_count) : true
-      ).filter(s => searchQuery ? (Object.values(s).join(' ')).toLowerCase().indexOf(searchQuery) > -1 : true),
+      ).filter(s => searchQuery ? ResourceAsStringForSearch(s).indexOf(searchQuery) > -1 : true),
       ["is_suspend", "priority", "created_raw"], ["asc", "desc", "desc"])
     );
   }, [sourceFilter, todayFilterValue, peopleFilter, activeNow, statusFilter, subs, searchQuery, userFilterValue]);
@@ -112,7 +114,6 @@ export const SubmissionList = (
   };
 
   const peopleStatusChange = (values) => {
-
     if (values.length) {
       setPeopleFilter(values);
     } else {
@@ -187,7 +188,7 @@ export const SubmissionList = (
         <QuickFilter label={"Szukaj"}>
           <div className={"d-flex align-items-center gap-2"}>
             <Search />
-            <input className="search-input" onChange={(e) => setSearchQuery(e.target.value.toLowerCase())} />
+            <input className="search-input" onChange={(e) => setSearchQuery(PrepareSearchQuery(e.target.value))} />
           </div>
         </QuickFilter>
       </div>

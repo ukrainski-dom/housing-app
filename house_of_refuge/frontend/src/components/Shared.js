@@ -42,3 +42,12 @@ export function LoadingSpinner() {
     </div>
   </div>;
 }
+
+export function PrepareSearchQuery(query) {
+  return query.replace(/\s+/g, '').toLowerCase();
+}
+
+export function ResourceAsStringForSearch(r) {
+    var no_whitespaces = Object.values(r).map((e) => String(e).replace(/\s+/g, ''));
+    return no_whitespaces.join(' ').toLowerCase();
+}
