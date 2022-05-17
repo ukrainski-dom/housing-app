@@ -9,6 +9,8 @@ import {orderBy} from "lodash";
 import {SubmissionRow} from "./SubmissionRow";
 import BootstrapSwitchButton from "bootstrap-switch-button-react";
 import {LoadingSpinner} from "./Shared";
+import {PrepareSearchQuery} from "./Shared";
+import {ResourceAsStringForSearch} from "./Shared";
 import {QuickFilter} from "./QuickFilter";
 
 const SHOW_NUMBER = 50;
@@ -95,10 +97,6 @@ export const ResourceList = ({initialResources, sub, subHandler, user, clearActi
     });
   };
 
-  const resourceAsString = (r) => {
-    return Object.values(r).join(' ').toLowerCase();
-  };
-
   const handleSort = (column) => {
     setSortBy(column);
     setSortOrder(sortOrder === "asc" ? "desc" : "asc");
@@ -134,7 +132,7 @@ export const ResourceList = ({initialResources, sub, subHandler, user, clearActi
                 .filter(r => statusFilter ? statusFilter.includes(r.resource) : true)
                 .filter(r => hotTopic ? isHot(r) : true)
                 .filter(r => turtleFilter ? r.turtle : true)
-                .filter(r => searchQuery ? resourceAsString(r).search(searchQuery) > -1 : true),
+                .filter(r => searchQuery ? ResourceAsStringForSearch(r).indexOf(searchQuery) > -1 : true),
             [sortByStatus, sortBy, "id"], ["desc", sortOrder, "asc"]));
   }, [onlyWarsaw, onlyAvailable, peopleFilter, statusFilter, hotTopic, searchQuery, turtleFilter, resources]);
 
@@ -211,7 +209,7 @@ export const ResourceList = ({initialResources, sub, subHandler, user, clearActi
           <QuickFilter label={"Szukaj"} className={"flex-grow-1"}>
             <div className={"d-flex align-items-center"}>
               <Search/>
-              <input className="search-input flex-grow-1" onChange={(e) => setSearchQuery(e.target.value.toLowerCase())}/>
+              <input className="search-input flex-grow-1" onChange={(e) => setSearchQuery(PrepareSearchQuery(e.target.value))}/>
             </div>
           </QuickFilter>
         </div>
