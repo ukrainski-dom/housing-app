@@ -246,12 +246,13 @@ def update_sub(request, sub_id):
                         {"data": None,
                          "message": _("Someone is already processing this request"),
                          "status": "error"}, status=400)
-                elif sub.resource:
-                    #  we never want to free up sub with host
-                    return JsonResponse(
-                        {"data": None,
-                         "message": _("This request already has a host"),
-                         "status": "error"}, status=400)
+                # comment this out, as we may want to cancel matched pair (e.g., if button was pressed accidentally)
+                # elif sub.resource:
+                #     #  we never want to free up sub with host
+                #     return JsonResponse(
+                #         {"data": None,
+                #          "message": _("This request already has a host"),
+                #          "status": "error"}, status=400)
                 else:
                     setattr(sub, field, value)
 
