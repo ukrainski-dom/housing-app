@@ -39,9 +39,10 @@ const updateSub = (sub, fields, onCorrect = null) => {
 
     if (data.status === "success") {
       if (onCorrect) {
-
         onCorrect();
       }
+    } else {
+      throw new Error(data.message);
     }
     // toast(`${data.message}`, {type: data.status});
   }).catch((error) => {
@@ -305,7 +306,7 @@ export function SubmissionRow({sub, activeHandler, user, isGroupCoordinator, isA
         </td>
         <td colSpan={2} className={"text-center"}>
           {localSub.matcher &&
-              <Button variant={"secondary"} size={"sm"} onClick={freeUpMatcher}>Zwolnij zgłoszenie</Button>}
+              <Button variant={"danger"} size={"sm"} onClick={freeUpMatcher}>Zwolnij zgłoszenie</Button>}
         </td>
         <td colSpan={2} className={"text-center"}>
           {localSub.coordinator &&

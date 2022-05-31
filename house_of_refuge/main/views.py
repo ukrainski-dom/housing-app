@@ -246,12 +246,6 @@ def update_sub(request, sub_id):
                         {"data": None,
                          "message": _("Someone is already processing this request"),
                          "status": "error"}, status=400)
-                elif sub.resource:
-                    #  we never want to free up sub with host
-                    return JsonResponse(
-                        {"data": None,
-                         "message": _("This request already has a host"),
-                         "status": "error"}, status=400)
                 else:
                     setattr(sub, field, value)
 
@@ -351,7 +345,7 @@ def get_submissions(request):
 
 def healthcheck(request):
     HousingResource.objects.first()
-    return HttpResponse("", status=204)
+    return HttpResponse("", status=200)
 
 
 def day_iterator(start_date):
