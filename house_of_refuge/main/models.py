@@ -82,6 +82,7 @@ class HousingResource(TimeStampedModel):
         max_length=2048,
         verbose_name=_("Something about you"),
         help_text=_("how old are you? who do you live with (if you'll host at your place)?"),
+        blank=True
     )
     resource = models.CharField(
         choices=HousingType.choices,
@@ -162,11 +163,13 @@ class HousingResource(TimeStampedModel):
         max_length=2048,
         verbose_name=_("Details"),
         help_text=_("A bunch of information about the place - presence of animals, languages spoken by tenants, availability of bed linen and towels, others"),
+        blank=True
     )
     transport = models.CharField(
         choices=TransportRange.choices,
         max_length=16,
         verbose_name=_("Transport"),
+        blank=True
     )
     phone_number = models.CharField(
         max_length=128,
