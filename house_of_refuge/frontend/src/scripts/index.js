@@ -18,6 +18,8 @@ import {SOURCE_OPTIONS, SubmissionList} from "../components/SubmissionList";
 import useInterval from "use-interval";
 import {BrowserRouter, Route, Routes, useSearchParams} from "react-router-dom";
 
+var UPDATE_LOOP_IS_PROCESSING = false;
+
 
 const CoordinatorsHeader = ({coordinators, helped, hide}) => {
   const [peopleHelped, setPeopleHelped] = useState(helped);
@@ -149,52 +151,57 @@ const App = ({subs, userData, coordinators, helped}) => {
   }, []);
 
   useInterval(async () => {
-    if (!tabVisible) {
+    if (!tabVisible || UPDATE_LOOP_IS_PROCESSING) {
       return;
     }
 
-    if (activeSub) {
-      const latest = parseFloat(await getLatestHostTimestamp());
+    UPDATE_LOOP_IS_PROCESSING = true
+    try {
+      if (activeSub) {
+        const latest = parseFloat(await getLatestHostTimestamp());
 
-      if (latest > latestHostChange) {
+        if (latest > latestHostChange) {
 
-        const response = await fetch(`/api/zasoby?since=${latestHostChange}`);
-        const result = await response.json();
+          const response = await fetch(`/api/zasoby?since=${latestHostChange}`);
+          const result = await response.json();
 
-        const changedHosts = result.data;
-        const changedIds = changedHosts.map(s => s.id);
-        setHosts((currentHosts) => [
-          ...currentHosts.filter(s => !changedIds.includes(s.id)),
-          ...changedHosts.filter(h => shouldShowHost(h, userData.id))]
-        );
-        setLatestHostChange(latest);
+          const changedHosts = result.data;
+          const changedIds = changedHosts.map(s => s.id);
+          setHosts((currentHosts) => [
+            ...currentHosts.filter(s => !changedIds.includes(s.id)),
+            ...changedHosts.filter(h => shouldShowHost(h, userData.id))]
+          );
+          setLatestHostChange(latest);
+        } else {
+
+        }
       } else {
+        // update submissions
+        const latest = parseFloat(await getLatestSubId());
 
+        if (latest > latestSubChange) {
+
+          const response = await fetch(`/api/zgloszenia?since=${latestSubChange}`);
+          const result = await response.json();
+
+          const newSubs = result.data.submissions;
+          const newSubsIds = newSubs.map(s => s.id);
+
+          const regExp = /\s/g;
+          newSubs.forEach(el => {
+            el.created_raw = new Date(el.created_raw)
+            el.phone_number_clean = el.phone_number.replace(regExp, '')
+          })
+          setSubmissions((cS) => [...cS.filter(s => !newSubsIds.includes(s.id)), ...newSubs]);
+          // do latest for dropped
+          setDroppedHosts(result.data.dropped);
+          setLatestSubChange(latest);
+        } else {
+
+        }
       }
-    } else {
-      // update submissions
-      const latest = parseFloat(await getLatestSubId());
-
-      if (latest > latestSubChange) {
-
-        const response = await fetch(`/api/zgloszenia?since=${latestSubChange}`);
-        const result = await response.json();
-
-        const newSubs = result.data.submissions;
-        const newSubsIds = newSubs.map(s => s.id);
-
-        const regExp = /\s/g;
-        newSubs.forEach(el => {
-          el.created_raw = new Date(el.created_raw)
-          el.phone_number_clean = el.phone_number.replace(regExp, '')
-        })
-        setSubmissions((cS) => [...cS.filter(s => !newSubsIds.includes(s.id)), ...newSubs]);
-        // do latest for dropped
-        setDroppedHosts(result.data.dropped);
-        setLatestSubChange(latest);
-      } else {
-
-      }
+    } finally {
+      UPDATE_LOOP_IS_PROCESSING = false
     }
 
   }, getRandomInt(1000, 1200));

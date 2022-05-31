@@ -351,7 +351,7 @@ def get_submissions(request):
 
 def healthcheck(request):
     HousingResource.objects.first()
-    return HttpResponse("", status=204)
+    return HttpResponse("", status=200)
 
 
 def day_iterator(start_date):
