@@ -107,13 +107,13 @@ export function SubmissionRow({sub, activeHandler, user, isGroupCoordinator, isA
 
     if (isActive === true) {
       updateSub(localSub, {"status": newStatus, matcher: null}, () => {
-        setStatus(newStatus)
+        setStatus(newStatus);
         setLocalSub((s) => ({...s, status: newStatus, matcher: null}));
-        activeHandler(sub, true, false)
+        activeHandler(sub, true, false);
       });
     } else {
       updateSub(localSub, {"status": newStatus}, () => {
-        setStatus(newStatus)
+        setStatus(newStatus);
         setLocalSub((s) => ({...s, status: newStatus}));
       });
     }

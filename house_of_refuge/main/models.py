@@ -37,6 +37,7 @@ class TransportRange(models.TextChoices):
 
 class Status(models.TextChoices):
     NEW = "new", _("Fresh")
+    BOOKED = "booked", _("Booked")
     TAKEN = "taken", _("Taken")
     CALLING = "calling", _("Calling")
     IGNORE = "ignore", _("Ignore")

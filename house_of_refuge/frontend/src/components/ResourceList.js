@@ -114,6 +114,13 @@ export const ResourceList = ({initialResources, sub, subHandler, user, clearActi
     return resource.is_dropped || resource.is_ready;
   };
 
+  const sortByStatus = (resource) => {
+    if (resource.status === "booked") {
+      return (resource.owner.id === user.id) ? 1 : -1;
+    }
+    return 0;
+  };
+
   useEffect(() => {
     setVisibleResources(
         orderBy(
@@ -126,7 +133,7 @@ export const ResourceList = ({initialResources, sub, subHandler, user, clearActi
                 .filter(r => hotTopic ? isHot(r) : true)
                 .filter(r => turtleFilter ? r.turtle : true)
                 .filter(r => searchQuery ? ResourceAsStringForSearch(r).indexOf(searchQuery) > -1 : true),
-            [sortBy, "id"], [sortOrder, "asc"]));
+            [sortByStatus, sortBy, "id"], ["desc", sortOrder, "asc"]));
   }, [onlyWarsaw, onlyAvailable, peopleFilter, statusFilter, hotTopic, searchQuery, turtleFilter, resources]);
 
   useEffect(() => {
