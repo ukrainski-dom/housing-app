@@ -1,0 +1,15 @@
+version: '3.7'
+
+services:
+  postgres:
+    image: postgres:14
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: house_of_refuge
+    restart: unless-stopped
+
+networks:
+  default:
+    external:
+      name: cloudbuild

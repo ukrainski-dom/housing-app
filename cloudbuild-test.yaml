@@ -1,0 +1,13 @@
+steps:
+  - name: python:3.9
+    entrypoint: pip
+    args: ["install", "-r", "requirements/local.txt", "--user", "--quiet"]
+
+  - name: 'docker/compose'
+    args: [ '-f', 'docker-compose-ci.yml', 'up', '-d', '--quiet-pull']
+
+  - name: python:3.9
+    entrypoint: python
+    args: [ "-m", "pytest"]
+    env:
+      - 'DATABASE_URL=postgres://postgres:postgres@postgres:5432/house_of_refuge'
