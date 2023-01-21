@@ -72,7 +72,7 @@ export const ResourceList = ({initialResources, sub, subHandler, user, clearActi
   }, [page]);
 
   const [columnsData] = useState({
-    name: {fieldName: 'name', display: "Imie", emoji: "👱", sort: "asc"},
+    name: {fieldName: 'name', display: "Imię i nazwisko", emoji: "👱", sort: "asc"},
     address: {fieldName: 'address', display: "Adres", emoji: "🏘", sort: "asc"},
     people_to_accommodate: {fieldName: 'people_to_accommodate', display: "Ilu ludzi?", emoji: "👨‍👩‍👧‍👦", sort: "asc"},
     accommodation_length: {fieldName: 'accommodation_length', display: "Na jak długo?", emoji: "🕙", sort: "asc"},

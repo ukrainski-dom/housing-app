@@ -236,38 +236,34 @@ export const ResourceRow = ({resource, isExpanded, onMatch, user, activeSub, com
       <Table bordered style={{borderColor: 'black'}}>
         <tbody>
         <tr>
-          <th>Coś o sobie</th>
-          <td>{resource.about_info}</td>
           <th>Języki</th>
           {/* FIXME: workaround to use unused languages field as call hint */}
-          <td></td>
-          <th>Kiedy można dzwonić?</th>
-          <td>{resource.when_to_call}</td>
+          <td>{resource.languages}</td>
+          <th>Od kiedy?</th>
+          <td>26/06/2022</td>
+          <th>Na ile?</th>
+          <td>Na miesiąc</td>
         </tr>
         <tr>
-          <th>Info o miejscu</th>
+          <th>Dodatkowe informacje</th>
           <td>{resource.details}</td>
           <th>Czy są w domu zwierzęta?</th>
-          <td>{resource.living_with_pets}</td>
-          <th>Czy przyjmie zwierzęta?</th>
-          <td>{resource.can_take_person_with_pets}</td>
+          <td>Kot, Pies</td>
+          <th>Udogodnienia</th>
+          <td>
+            <ul>
+              <li>Możliwość zakwaterowania osoby/osób ze zwierzęciem/tami</li>
+              <li>Parter lub budynek z windą</li>
+            </ul>
+          </td>
         </tr>
         <tr>
           <th>Ile osób?</th>
-          <td>{resource.extra}</td>
-          <th>Transport</th>
-          <td>{resource.transport}</td>
-          <th>Koszty</th>
-          <td>{resource.costs}</td>
-        </tr>
-        <tr>
-          <th>Telefon</th>
-          <td>{resource.phone_number}</td>
-          <th>Uwagi do telefonu:</th>
-          {/* FIXME: workaround to support call hints */}
-          <td>{resource.languages}</td>
-          <th>Email</th>
-          <td>{resource.email}</td>
+          <td>Dorośli: 4 Dzieci: 4</td>
+          <th>Mogę zakwaterować</th>
+          <td>Osoba starsza (samodzielna), Mężczyzna</td>
+          <th>Kontakt</th>
+          <td>{resource.phone_number + ' ' + resource.email}</td>
         </tr>
         <tr>
           <th>Notatka</th>

@@ -32,6 +32,7 @@ class HousingResourceFactory(DjangoModelFactory):
 
 class SubmissionFactory(DjangoModelFactory):
     name = Faker("name")
+    email = Faker("email")
     phone_number = Faker("phone_number")
     people = Faker('pyint', min_value=1, max_value=20)
     how_long = "3 dni"

@@ -152,7 +152,7 @@ const App = ({subs, userData, coordinators, helped}) => {
       return;
     }
 
-    UPDATE_LOOP_IS_PROCESSING = true
+    UPDATE_LOOP_IS_PROCESSING = true;
     try {
       if (activeSub) {
         const latest = parseFloat(await getLatestHostTimestamp());
@@ -198,7 +198,7 @@ const App = ({subs, userData, coordinators, helped}) => {
         }
       }
     } finally {
-      UPDATE_LOOP_IS_PROCESSING = false
+      UPDATE_LOOP_IS_PROCESSING = false;
     }
 
   }, getRandomInt(1000, 1200));

@@ -177,55 +177,42 @@ export function SubmissionRow({sub, activeHandler, user, isGroupCoordinator, isA
     <Table className="sub-table" style={{'background-color': 'rgba(255, 255, 255, 0.95)', display: collapsed ? 'none' : 'table'}}>
       <tbody>
       <tr>
-        <th>Imie</th>
+        <th>Imię i nazwisko</th>
         <td>{localSub.name}</td>
         <th>Ile Osób?</th>
-        <td>{localSub.people}</td>
+        <td>Dorośli - 3: Ż/43, M/50, I/22<br/>Dzieci - 3: Ż/12, M/6, I/15</td>
         <th>Jak dlugo?</th>
         <td>
-          <EditableField value={localSub.how_long} onRename={
-            (value) => updateSub(localSub, {"how_long": value}, () => setLocalSub((s) => ({...s, how_long: value})))}/>
+          На два місяці і більше
         </td>
-        <th>Telefon</th>
-        <td><EditableField
-            value={localSub.phone_number}
-            onRename={(phone) => updateSub(localSub, {"phone_number": phone}, () => setLocalSub(s => ({
-              ...s,
-              phone_number: phone
-            })))}/></td>
+        <th>Kontakt</th>
+        <td>{localSub.phone_number + ', ' + localSub.email}</td>
       </tr>
       <tr>
         <th>Od Kiedy?</th>
         <td>
-          {statusAsNumber(localSub.status) < 2 ?
-          <input type="date" required min={new Date().toJSON().slice(0, 10)}
-                 value={localSub.when}
-                 onChange={(e) => {
-                   const value = e.target.value;
-
-
-                   if (e && localSub.when !== value) {
-                     updateSub(localSub,
-                         {"when": value},
-                         () => setLocalSub((s) => ({...s, when: value}))
-                     );
-                   }
-                 }}/> : localSub.when}
+          26/12/2022
         </td>
         <th>Opis:</th>
         <td>{localSub.description}</td>
         <th>Języki</th>
         <td>{localSub.languages}</td>
-        <th>Narodowość</th>
-        <td>{localSub.origin}</td>
+        <th>Lokalizacja</th>
+        <td>Mazowieckie - Warszawa (03-984)</td>
       </tr>
       <tr>
-        <th>Ma zwierzęta</th>
-        <td>{localSub.traveling_with_pets}</td>
-        <th>Czy może spać ze zwierzętami?</th>
-        <td>{localSub.can_stay_with_pets}</td>
-        <th>Potrzebuje transportu?</th>
-        <td>{localSub.transport_needed ? "tak" : "nie"}</td>
+        <th>Dodatkowe potrzeby</th>
+        <td>Dodatkowe potrzeby,,,</td>
+        <th>Alergie</th>
+        <td>Alegrie....</td>
+        <th>Osoby narażone</th>
+        <td>ЛГБТКA+; Особа з неповносправністю (самостійна)</td>
+        <th>Plany</th>
+        <td>Plany...</td>
+      </tr>
+      <tr>
+        <th>Pierwsze zgłoszenie?</th>
+        <td>Tak</td>
         <th>Notka</th>
         <td>
           <EditableField value={note} onRename={(note) => updateSub(localSub, {"note": note}, () => setNote(note))}/>
@@ -248,8 +235,6 @@ export function SubmissionRow({sub, activeHandler, user, isGroupCoordinator, isA
         <td colSpan={3}>{localSub.resource.note}</td>
       </tr>}
       <tr className={localSub.resource?"tr-host":""}>
-        <th>Osoba zgłaszająca</th>
-        <td>{localSub.receiver?.display || localSub.contact_person}</td>
         <th>{["searching", "new"].includes(localSub.status) ? "Hosta szuka" : "Host znaleziony przez"}</th>
         <td>{localSub.matcher?.display || getActionBtn()}</td>
         <th>Łącznik</th>

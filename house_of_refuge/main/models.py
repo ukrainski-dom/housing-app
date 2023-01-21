@@ -454,6 +454,11 @@ class Submission(TimeStampedModel):
         max_length=128,
         verbose_name=_("Phone number"),
     )
+    email = models.EmailField(
+        unique=False,
+        verbose_name=_("Email"),
+        null=True
+    )
     people = models.CharField(
         max_length=128,
         verbose_name=_("The number of people"),
@@ -720,6 +725,7 @@ class Submission(TimeStampedModel):
             created_raw=self.created,
             created=created,
             name=self.name,
+            email=self.email,
             phone_number=get_phone_number_display(self.phone_number),
             people=self.people,
             people_count=str(self.people_as_int),
