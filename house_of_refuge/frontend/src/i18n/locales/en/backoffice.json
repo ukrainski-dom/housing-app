@@ -1,6 +1,5 @@
 {
-  "terrain_coordinators": "Field coordinators",
-  "remote_coordinators": "Remote coordinators",
+  "coordinators": "Coordinators",
   "log_out": "Log out",
   "today_we_helped_count": "Today we helped {pplHelpedCount} people",
   "source": "Source",

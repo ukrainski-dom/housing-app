@@ -1,6 +1,5 @@
 {
-  "terrain_coordinators": "Koordynatorzy Zachodni",
-  "remote_coordinators": "Koordynatorzy Zdalni",
+  "coordinators": "Koordynatorzy",
   "log_out": "Wyloguj się",
   "today_we_helped_count": "Pomogliśmy dziś {pplHelpedCount} osobom",
   "source": "Źródło",
