@@ -24,6 +24,7 @@ var UPDATE_LOOP_IS_PROCESSING = false;
 const CoordinatorsHeader = ({coordinators, helped, hide}) => {
   const [peopleHelped, setPeopleHelped] = useState(helped);
   const [collapsed, setCollapsed] = useState(false);
+  const all_coordinators = (coordinators.station || []).concat(coordinators.remote || [])
 
   useInterval(async () => {
     const newHelped = await getHelped();
@@ -37,12 +38,8 @@ const CoordinatorsHeader = ({coordinators, helped, hide}) => {
     <div className="coordinators" style={{ display: collapsed ? 'none' : 'block' }}>
       <div className="d-flex justify-content-around">
         <div className={"mx-5 text-center"}>
-          <h5>Koordynatorzy Zachodni</h5>
-          <ol>{(coordinators.station || []).map(c => <li key={c.user.id}>{c.user.display}</li>)}</ol>
-        </div>
-        <div className={"mx-5 text-center"}>
-          <h5>Koordynatorzy Zdalni</h5>
-          <ol>{(coordinators.remote || []).map(c => <li key={c.user.id}>{c.user.display}</li>)}</ol>
+          <h5>Koordynatorzy</h5>
+            <ol>{all_coordinators.map(c => <li key={c.user.id}>{c.user.display}</li>)}</ol>
         </div>
       </div>
       {peopleHelped ?
