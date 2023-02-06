@@ -444,6 +444,86 @@ class SubmissionManager(Manager):
         return self.filter(finished_at__gte=cut_off, status=SubStatus.SUCCESS).only("people")
 
 
+class Sex(models.TextChoices):
+    MALE = "male", _("Male")
+    FEMALE = "female", _("Female")
+    OTHER = "other", _("Other")
+
+
+class AgeRange(models.TextChoices):
+    AGE0_5 = "0-5", _("0-5")
+    AGE6_9 = "6-9", _("6-9")
+    AGE10_14 = "10-14", _("10-14")
+    AGE15_17 = "15-17", _("15-17")
+    AGE18_24 = "18-24", _("18-24")
+    AGE25_34 = "25-34", _("25-34")
+    AGE35_49 = "35-49", _("35-49")
+    AGE50_PLUS = "50+", _("50+")
+
+
+class Member(models.Model):
+    sex = models.CharField(
+        choices=Sex.choices,
+        max_length=32,
+        verbose_name=_("Sex"),
+    )
+    age_range = models.CharField(
+        choices=AgeRange.choices,
+        max_length=32,
+        verbose_name=_("Age range"),
+    )
+    submission = models.ForeignKey('Submission', on_delete=models.CASCADE)
+
+    class Meta:
+        ordering = ['age_range']
+
+    def __str__(self):
+        return self.age_range + ' ' + self.sex
+
+
+class HowLong(models.TextChoices):
+    UP_TO_WEEK = "upToWeek", _("Up to week")
+    MONTH = "month", _("Month")
+    TWO_MONTHS_OR_MORE = "twoMonthsOrMore", _("Two months or more")
+
+
+class InternationalizedDictModel(models.Model):
+    name = models.CharField(max_length=255, unique=True, primary_key=True)
+    namePl = models.CharField(max_length=255)
+    nameEN = models.CharField(max_length=255)
+
+    class Meta:
+        abstract = True
+        ordering = ['name']
+
+    def __str__(self):
+        return self.name
+
+
+class Voivodeship(InternationalizedDictModel):
+    pass
+
+
+class RefugeeGroup(InternationalizedDictModel):
+    pass
+
+
+class AdditionalNeed(InternationalizedDictModel):
+    pass
+
+
+class Allergy(InternationalizedDictModel):
+    pass
+
+
+class Plans(InternationalizedDictModel):
+    pass
+
+
+class Language(InternationalizedDictModel):
+    pass
+
+
 class Submission(TimeStampedModel):
     name = models.CharField(
         max_length=512,
@@ -459,35 +539,51 @@ class Submission(TimeStampedModel):
         verbose_name=_("Email"),
         null=True
     )
-    people = models.CharField(
-        max_length=128,
+    voivodeships = models.ManyToManyField(Voivodeship)
+    people = models.CharField(  # legacy but let's leave it for migration time
+        max_length=2048,
         verbose_name=_("The number of people"),
     )
     how_long = models.CharField(
-        max_length=128,
+        choices=HowLong.choices,
+        null=True,
+        max_length=255,
         verbose_name=_("Length of stay"),
         help_text=_("For how long (in days)?"),
+    )
+    how_long_other = models.CharField(  # legacy - renamed from how_long
+        max_length=255,
+        null=True,
+        verbose_name=_("Length of stay"),
+        help_text=_("For how long?"),
+    )
+    additional_needs = models.ManyToManyField(AdditionalNeed)
+    additional_needs_other = models.CharField(
+        max_length=1024,
+        null=True,
+        verbose_name=_("Other additional needs"),
+        help_text=_("Other additional needs"),
+    )
+    allergies = models.ManyToManyField(Allergy)
+    allergies_other = models.CharField(
+        max_length=512,
+        null=True,
+        blank=True,
+        verbose_name=_("Other allergies"),
+        help_text=_("Other allergies"),
     )
     description = models.CharField(
         max_length=2048,
         verbose_name=_("Description"),
-        help_text=_("Describe the group, age of every person, "
-            "their relationships (family, friends?), "
-            "indicate whether it can be broken into smaller groups"),
-        )
-    origin = models.CharField(
-        max_length=512,
-        blank=True,
-        default="",
-        verbose_name=_("Nationality"),
+        help_text=_("Description"),
     )
-    traveling_with_pets = models.CharField(
+    traveling_with_pets = models.CharField(  # legacy
         max_length=1024,
         null=True,
         blank=True,
         verbose_name=_("Traveling with pets"),
     )
-    can_stay_with_pets = models.CharField(
+    can_stay_with_pets = models.CharField(  # legacy
         max_length=512,
         null=True,
         blank=True,
@@ -500,7 +596,8 @@ class Submission(TimeStampedModel):
         blank=True,
         verbose_name=_("Contact person"),
     )
-    languages = models.CharField(
+    languages = models.ManyToManyField(Language)
+    languages_other = models.CharField(
         max_length=1024,
         null=True,
         blank=True,
@@ -513,7 +610,28 @@ class Submission(TimeStampedModel):
         blank=True,
         verbose_name=_("Since when the support is needed"),
     )
-    transport_needed = models.BooleanField(
+    groups = models.ManyToManyField(RefugeeGroup)
+    groups_other = models.CharField(
+        max_length=255,
+        null=True,
+        blank=True,
+        verbose_name=_("Other groups"),
+        help_text=_("Other groups"),
+    )
+    plans = models.ManyToManyField(Plans)
+    # todo: add max length validation in forms app
+    plans_other = models.CharField(
+        max_length=255,
+        null=True,
+        blank=True,
+        verbose_name=_("Other plans"),
+        help_text=_("Other plans"),
+    )
+    first_submission = models.BooleanField(
+        null=True,
+        verbose_name=_("First submission"),
+    )
+    transport_needed = models.BooleanField(  # legacy
         default=True,
         verbose_name=_("Transport needed"),
     )
@@ -530,7 +648,7 @@ class Submission(TimeStampedModel):
         max_length=32,
         verbose_name=_("Status"),
     )
-    person_in_charge_old = models.CharField(
+    person_in_charge_old = models.CharField(  # legacy
         max_length=512,
         default="",
         blank=True,

@@ -1,6 +1,8 @@
+import datetime
+
 import pytest
 
-from house_of_refuge.main.models import SubStatus, Coordinator, HousingResource, Submission, ObjectChange
+from house_of_refuge.main.models import SubStatus, Coordinator, HousingResource, Submission, ObjectChange, Member
 from house_of_refuge.main.tests.factories import SubmissionFactory, HousingResourceFactory
 from house_of_refuge.users.tests.factories import UserFactory
 
@@ -188,3 +190,68 @@ def test_housing_resource_endpoint(client):
     assert response.status_code == 204
     assert HousingResource.objects.count() == 0
 
+
+@pytest.mark.django_db
+def test_create_submission_integration_v2_endpoint(client):
+    data = dict(
+        name="Jan Kowalski",
+        phoneNumber="+48123123123",
+        email="test@example.com",
+        voivodeships=["mazowieckie"],
+        adults=[
+            {
+                "sex": "male",
+                "ageRange": "18-24"
+            }
+        ],
+        children=[
+            {
+                "sex": "female",
+                "ageRange": "0-5"
+            }
+        ],
+        fromDate="2023-01-01",
+        needPeriod="upToWeek",
+        additionalNeeds=["firstFlorOrElevator", "accessibleForWheelchairs"],
+        additionalNeedsOther="someOtherNeed",
+        allergies=["cats", "dogs"],
+        allergiesOther="someOtherAllergy",
+        languages=[
+            "polish",
+            "english"
+        ],
+        languagesOther="someOtherLang",
+        groups=["elderlyPersonWithGuardian", "refugeeCitizenshipNotUkrainian"],
+        groupsOther="someOtherGroup",
+        plans=["findJobAndRentApartmentOrRoomInPoland"],
+        plansOther="someOtherPlans",
+        firstSubmission=True
+    )
+
+    response = client.post("/api/submission", data=data, content_type="application/json")
+    assert response.status_code == 201
+
+    response_json = response.json()
+    sub_id = response_json["id"]
+    assert type(sub_id) == int
+
+    sub_from_db = Submission.objects.get(id=sub_id)
+
+    assert sub_from_db.name == "Jan Kowalski"
+    assert sub_from_db.phone_number == "+48123123123"
+    assert sub_from_db.email == "test@example.com"
+    assert sub_from_db.when == datetime.date(2023, 1, 1)
+    assert sub_from_db.how_long == "upToWeek"
+    assert sub_from_db.additional_needs_other == "someOtherNeed"
+    assert sub_from_db.allergies_other == "someOtherAllergy"
+    assert sub_from_db.languages_other == "someOtherLang"
+    assert sub_from_db.groups_other == "someOtherGroup"
+    assert sub_from_db.plans_other == "someOtherPlans"
+    assert sub_from_db.first_submission
+
+    assert {voivodeship.name for voivodeship in sub_from_db.voivodeships.all()} == {"mazowieckie"}
+
+    members = Member.objects.filter(submission__pk=sub_id).order_by('age_range')
+    assert len(members) == 2
+    assert [member.sex for member in members] == ['female', 'male']
+    assert [member.age_range for member in members] == ['0-5', '18-24']

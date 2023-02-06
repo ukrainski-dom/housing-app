@@ -24,7 +24,7 @@ from house_of_refuge.main.utils import send_mail
 # Create your views here.
 from .models import (
     HousingResource, Submission, SubStatus, Coordinator, ObjectChange, END_OF_DAY, SubSource,
-    SiteConfiguration, Status, MenuPage,
+    SiteConfiguration, Status, MenuPage, Member,
 )
 from .serializers import SubmissionSerializer, HousingResourceSerializer
 
@@ -217,12 +217,56 @@ def create_resource_integration(request, uuid):
 
 @csrf_exempt
 @api_view(['POST'])
+def create_resource_integration_v2(request, uuid):
+    resource = HousingResource(**json.loads(request.body))
+    resource.save()
+    return Response(status=status.HTTP_201_CREATED)
+
+
+@csrf_exempt
+@api_view(['POST'])
 def create_submission_integration(request, uuid):
     sub = Submission(**json.loads(request.body))
     super(TimeStampedModel, sub).save()
     sub.refresh_from_db()
     sub.save()
     return Response(status=status.HTTP_201_CREATED)
+
+
+@csrf_exempt
+@api_view(['POST'])
+@transaction.atomic
+def create_submission_integration_v2(request):
+    json_body = json.loads(request.body)
+    sub = Submission(
+        name=json_body["name"],
+        phone_number=json_body["phoneNumber"],
+        email=json_body["email"],
+        when=datetime.datetime.strptime(json_body["fromDate"], "%Y-%m-%d"),
+        how_long=json_body.get("needPeriod"),
+        additional_needs_other=json_body.get("additionalNeedsOther"),
+        allergies_other=json_body.get("allergiesOther"),
+        languages_other=json_body.get("languagesOther"),
+        groups_other=json_body.get("groupsOther"),
+        plans_other=json_body.get("plansOther"),
+        first_submission=json_body.get("firstSubmission")
+    )
+    sub.save()
+
+    for adult in json_body.get("adults"):
+        Member.objects.create(sex=adult['sex'], age_range=adult['ageRange'], submission=sub)
+
+    for child in json_body.get("children"):
+        Member.objects.create(sex=child['sex'], age_range=child['ageRange'], submission=sub)
+
+    sub.voivodeships.add(*json_body.get("voivodeships"))
+    sub.additional_needs.add(*json_body.get("additionalNeeds"))
+    sub.allergies.add(*json_body.get("allergies"))
+    sub.languages.add(*json_body.get("languages"))
+    sub.groups.add(*json_body.get("groups"))
+    sub.plans.add(*json_body.get("plans"))
+    sub.save()
+    return Response({"id": sub.id}, status=status.HTTP_201_CREATED)
 
 
 @require_http_methods(["POST"])
