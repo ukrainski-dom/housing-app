@@ -15,8 +15,7 @@ class Migration(migrations.Migration):
             ('childBed', 'Łóżeczko dla dziecka', 'A bed for a child'),
             ('petsAllowed', 'Możliwość zakwaterowania osoby/osób ze zwierzęciem/tami', 'Possibility of accommodating a person/people with a pet')
         """),
-        migrations.RunSQL("""INSERT INTO main_allergy ("name", "namePl", "nameEN") VALUES
-            ('lackOfAllergies', 'Brak', 'Lack'),
+        migrations.RunSQL("""INSERT INTO main_animal ("name", "namePl", "nameEN") VALUES
             ('cats', 'Koty', 'Cats'),
             ('dogs', 'Psy', 'Dogs'),
             ('rodents', 'Gryzonie', 'Rodents')

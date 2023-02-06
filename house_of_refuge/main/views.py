@@ -24,7 +24,7 @@ from house_of_refuge.main.utils import send_mail
 # Create your views here.
 from .models import (
     HousingResource, Submission, SubStatus, Coordinator, ObjectChange, END_OF_DAY, SubSource,
-    SiteConfiguration, Status, MenuPage, Member,
+    SiteConfiguration, Status, MenuPage, Member, Voivodeship,
 )
 from .serializers import SubmissionSerializer, HousingResourceSerializer
 
@@ -217,11 +217,32 @@ def create_resource_integration(request, uuid):
 
 @csrf_exempt
 @api_view(['POST'])
-def create_resource_integration_v2(request, uuid):
-    resource = HousingResource(**json.loads(request.body))
+def create_resource_integration_v2(request):
+    json_body = json.loads(request.body)
+    resource = HousingResource(
+        name=json_body["name"],
+        phone_number=json_body["phoneNumber"],
+        email=json_body["email"],
+        voivodeship=Voivodeship.objects.get(pk=json_body["voivodeship"]),
+        zip_code=json_body["zipCode"],
+        resource=json_body["resourceType"],
+        availability=datetime.datetime.strptime(json_body["fromDate"], "%Y-%m-%d"),
+        how_long=json_body["period"],
+        adults_max_count=json_body["adultsMaxCount"],
+        children_max_count=json_body["childrenMaxCount"],
+        facilities_other=json_body.get("facilitiesOther"),
+        animals_other=json_body.get("animalsOther"),
+        languages_other=json_body.get("languagesOther"),
+        groups_other=json_body.get("groupsOther"),
+        details=json_body.get("additionalInfo"),
+    )
     resource.save()
-    return Response(status=status.HTTP_201_CREATED)
-
+    resource.facilities.add(*json_body.get("facilities"))
+    resource.animals.add(*json_body.get("animals"))
+    resource.languages.add(*json_body.get("languages"))
+    resource.groups.add(*json_body.get("groups"))
+    resource.save()
+    return Response({"id": resource.id}, status=status.HTTP_201_CREATED)
 
 @csrf_exempt
 @api_view(['POST'])
@@ -249,6 +270,7 @@ def create_submission_integration_v2(request):
         languages_other=json_body.get("languagesOther"),
         groups_other=json_body.get("groupsOther"),
         plans_other=json_body.get("plansOther"),
+        description=json_body.get("additionalInfo"),
         first_submission=json_body.get("firstSubmission")
     )
     sub.save()

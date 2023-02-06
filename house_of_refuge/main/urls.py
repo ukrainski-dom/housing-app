@@ -39,8 +39,8 @@ urlpatterns = [
     path("api/stworz_zasob_integration/<str:uuid>", views.create_resource_integration, name="zasob_create_integration"),
     path("api/zglos_integration/<str:uuid>", views.create_submission_integration, name="zgloszenie_create_integration"),
 
-    path("api/housingresource", views.create_resource_integration_v2, name="zasob_create_integration"),
-    path("api/submission", views.create_submission_integration_v2, name="zgloszenie_create_integration"),
+    path("api/housing_resource", views.create_resource_integration_v2, name="zasob_create_integration_v2"),
+    path("api/submission", views.create_submission_integration_v2, name="zgloszenie_create_integration_v2"),
 
     path("api/match_found", views.resource_match_found, name="match_found"),
     path("api/sub/update/<int:sub_id>", views.update_sub, name="sub_update"),

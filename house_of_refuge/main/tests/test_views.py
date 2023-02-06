@@ -225,6 +225,7 @@ def test_create_submission_integration_v2_endpoint(client):
         groupsOther="someOtherGroup",
         plans=["findJobAndRentApartmentOrRoomInPoland"],
         plansOther="someOtherPlans",
+        additionalInfo="someAdditionalInfo",
         firstSubmission=True
     )
 
@@ -247,11 +248,77 @@ def test_create_submission_integration_v2_endpoint(client):
     assert sub_from_db.languages_other == "someOtherLang"
     assert sub_from_db.groups_other == "someOtherGroup"
     assert sub_from_db.plans_other == "someOtherPlans"
+    assert sub_from_db.description == "someAdditionalInfo"
     assert sub_from_db.first_submission
 
     assert {voivodeship.name for voivodeship in sub_from_db.voivodeships.all()} == {"mazowieckie"}
+    assert {need.name for need in sub_from_db.additional_needs.all()} == {"firstFlorOrElevator",
+                                                                         "accessibleForWheelchairs"}
+    assert {allergy.name for allergy in sub_from_db.allergies.all()} == {"cats", "dogs"}
+    assert {language.name for language in sub_from_db.languages.all()} == {"polish", "english"}
+    assert {group.name for group in sub_from_db.groups.all()} == {"elderlyPersonWithGuardian",
+                                                                  "refugeeCitizenshipNotUkrainian"}
+    assert {plans.name for plans in sub_from_db.plans.all()} == {"findJobAndRentApartmentOrRoomInPoland"}
 
     members = Member.objects.filter(submission__pk=sub_id).order_by('age_range')
     assert len(members) == 2
     assert [member.sex for member in members] == ['female', 'male']
     assert [member.age_range for member in members] == ['0-5', '18-24']
+
+
+@pytest.mark.django_db
+def test_create_housing_resource_integration_v2_endpoint(client):
+    data = dict(
+        name="Jan Kowalski",
+        phoneNumber="+48123123123",
+        email="test@example.com",
+        voivodeship="mazowieckie",
+        zipCode="03-984",
+        resourceType="separate_part_of_apartment",
+        facilities=["firstFlorOrElevator", "accessibleForWheelchairs"],
+        facilitiesOther="someOtherNeed",
+        adultsMaxCount=2,
+        childrenMaxCount=4,
+        fromDate="2023-01-01",
+        period="upToWeek",
+        groups=["elderlyPersonWithGuardian", "refugeeCitizenshipNotUkrainian"],
+        animals=["cats", "dogs"],
+        animalsOther="someOtherAnimal",
+        languages=[
+            "polish",
+            "english"
+        ],
+        languagesOther="someOtherLang",
+        additionalInfo="someAdditionalInfo"
+    )
+
+    response = client.post("/api/housing_resource", data=data, content_type="application/json")
+    assert response.status_code == 201
+
+    response_json = response.json()
+    resource_id = response_json["id"]
+    assert type(resource_id) == int
+
+    resource_from_db = HousingResource.objects.get(id=resource_id)
+
+    assert resource_from_db.name == "Jan Kowalski"
+    assert resource_from_db.phone_number == "+48123123123"
+    assert resource_from_db.email == "test@example.com"
+    assert resource_from_db.voivodeship.name == "mazowieckie"
+    assert resource_from_db.zip_code == "03-984"
+    assert resource_from_db.resource == "separate_part_of_apartment"
+    assert resource_from_db.facilities_other == "someOtherNeed"
+    assert resource_from_db.adults_max_count == 2
+    assert resource_from_db.children_max_count == 4
+    assert resource_from_db.availability == datetime.date(2023, 1, 1)
+    assert resource_from_db.how_long == "upToWeek"
+    assert resource_from_db.animals_other == "someOtherAnimal"
+    assert resource_from_db.languages_other == "someOtherLang"
+    assert resource_from_db.details == "someAdditionalInfo"
+
+    assert {facility.name for facility in resource_from_db.facilities.all()} == {"firstFlorOrElevator",
+                                                                                 "accessibleForWheelchairs"}
+    assert {language.name for language in resource_from_db.languages.all()} == {"polish", "english"}
+    assert {animal.name for animal in resource_from_db.animals.all()} == {"cats", "dogs"}
+    assert {group.name for group in resource_from_db.groups.all()} == {"elderlyPersonWithGuardian",
+                                                                       "refugeeCitizenshipNotUkrainian"}

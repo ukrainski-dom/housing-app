@@ -125,7 +125,7 @@ class Migration(migrations.Migration):
             field=models.ManyToManyField(to='main.AdditionalNeed'),
         ),
         migrations.CreateModel(
-            name='Allergy',
+            name='Animal',
             fields=[
                 ('name', models.CharField(max_length=255, primary_key=True, serialize=False, unique=True)),
                 ('namePl', models.CharField(max_length=255)),
@@ -143,7 +143,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='submission',
             name='allergies',
-            field=models.ManyToManyField(to='main.Allergy'),
+            field=models.ManyToManyField(to='main.Animal'),
         ),
         migrations.CreateModel(
             name='Language',
@@ -182,5 +182,15 @@ class Migration(migrations.Migration):
             options={
                 'ordering': ['age_range'],
             },
+        ),
+        migrations.AlterField(
+            model_name='submission',
+            name='description',
+            field=models.CharField(help_text='Description', max_length=2048, null=True, verbose_name='Description'),
+        ),
+        migrations.AlterField(
+            model_name='submission',
+            name='how_long',
+            field=models.CharField(choices=[('upToWeek', 'Up to week'), ('month', 'Month'), ('twoMonthsOrMore', 'Two months or more'), ('halfYear', 'Half a year'), ('asLongAsNeeded', 'As long as needed')], help_text='For how long (in days)?', max_length=255, null=True, verbose_name='Length of stay'),
         ),
     ]
