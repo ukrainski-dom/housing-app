@@ -140,6 +140,11 @@ class HousingResource(TimeStampedModel):
         max_length=1024,
         verbose_name=_("Resource"),
     )
+    resource_other = models.CharField(
+        null=True,
+        max_length=1024,
+        verbose_name=_("Resource other"),
+    )
     voivodeship = models.ForeignKey('Voivodeship', null=True, on_delete=models.DO_NOTHING)
     city_and_zip_code = models.CharField( # legacy
         max_length=512,

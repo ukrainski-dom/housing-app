@@ -275,6 +275,7 @@ def test_create_housing_resource_integration_v2_endpoint(client):
         voivodeship="mazowieckie",
         zipCode="03-984",
         resourceType="separate_part_of_apartment",
+        resourceTypeOther="otherResourceType",
         facilities=["firstFlorOrElevator", "accessibleForWheelchairs"],
         facilitiesOther="someOtherNeed",
         adultsMaxCount=2,
@@ -307,6 +308,7 @@ def test_create_housing_resource_integration_v2_endpoint(client):
     assert resource_from_db.voivodeship.name == "mazowieckie"
     assert resource_from_db.zip_code == "03-984"
     assert resource_from_db.resource == "separate_part_of_apartment"
+    assert resource_from_db.resource_other == "otherResourceType"
     assert resource_from_db.facilities_other == "someOtherNeed"
     assert resource_from_db.adults_max_count == 2
     assert resource_from_db.children_max_count == 4

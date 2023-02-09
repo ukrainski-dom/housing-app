@@ -18,6 +18,11 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name='housingresource',
+            name='resource_other',
+            field=models.CharField(max_length=1024, null=True, verbose_name='Resource other'),
+        ),
+        migrations.AddField(
+            model_name='housingresource',
             name='adults_max_count',
             field=models.IntegerField(null=True, verbose_name='Adults to accommodate'),
         ),

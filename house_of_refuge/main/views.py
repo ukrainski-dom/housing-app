@@ -226,6 +226,7 @@ def create_resource_integration_v2(request):
         voivodeship=Voivodeship.objects.get(pk=json_body["voivodeship"]),
         zip_code=json_body["zipCode"],
         resource=json_body["resourceType"],
+        resource_other=json_body["resourceTypeOther"],
         availability=datetime.datetime.strptime(json_body["fromDate"], "%Y-%m-%d"),
         how_long=json_body["period"],
         adults_max_count=json_body["adultsMaxCount"],
