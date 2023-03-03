@@ -575,9 +575,17 @@ class Member(models.Model):
     class Meta:
         ordering = ['age_range']
 
+    def is_child(self):
+        return self.age_range in [AgeRange.AGE0_5, AgeRange.AGE6_9, AgeRange.AGE15_17]
+
     def __str__(self):
         return self.age_range + ' ' + self.sex
 
+    def as_json(self):
+        return {
+            "sex": self.sex,
+            "ageRange": self.age_range
+        }
 
 class Submission(TimeStampedModel):
     name = models.CharField(
@@ -890,6 +898,9 @@ class Submission(TimeStampedModel):
         self.save()
 
     def as_prop(self):
+        members = Member.objects.filter(submission=self)
+        adults = [adult.as_json() for adult in filter(lambda m: not m.is_child(), members)]
+        children = [child.as_json() for child in filter(lambda m: m.is_child(), members)]
         try:
             created = self.created.astimezone(timezone.get_default_timezone()).strftime("%-d %B %H:%M:%S")
         except ValueError:
@@ -901,11 +912,15 @@ class Submission(TimeStampedModel):
             name=self.name,
             email=self.email,
             phone_number=get_phone_number_display(self.phone_number),
+            children=children,
+            adults=adults,
             people=self.people,
             people_count=str(self.people_as_int),
             description=self.description,
             how_long=self.how_long,
+            how_long_other=self.how_long_other,
             languages=[lang.as_json() for lang in self.languages.all()],
+            languages_other=self.languages_other,
             source=self.source,
             priority=self.priority,
             when=self.when,

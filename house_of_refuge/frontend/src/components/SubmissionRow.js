@@ -179,28 +179,33 @@ export function SubmissionRow({sub, activeHandler, user, isGroupCoordinator, isA
       <tr>
         <th>Imię i nazwisko</th>
         <td>{localSub.name}</td>
-        <th>Ile Osób?</th>
-        <td>Dorośli - 3: Ż/43, M/50, I/22<br/>Dzieci - 3: Ż/12, M/6, I/15</td>
-        <th>Jak dlugo?</th>
+        <th>Osoby</th>
         <td>
-          На два місяці і більше
+          {
+            [
+              localSub.adults ? ('Dorośli - ' + localSub.adults.length + ': ' + (localSub.adults.map(adult => adult.sex + '/' + adult.ageRange)).join(', ')) : '',
+              localSub.children ? ('Dzieci - ' + localSub.children.length + ': ' + (localSub.children.map(child => child.sex + '/' + child.ageRange)).join(', ')) : '',
+              localSub.people
+            ].filter(e => e).map(e => <div>{e}</div>)
+          }
+        </td>
+        <th>Jak dlugo?</th>
+        {/*todo: translation*/}
+        <td>
+          {[localSub.how_long, localSub.how_long_other].filter(l => l).join(', ')}
         </td>
         <th>Kontakt</th>
         <td>{localSub.phone_number + ', ' + localSub.email}</td>
       </tr>
       <tr>
         <th>Od Kiedy?</th>
-        <td>
-          26/12/2022
-        </td>
+        <td>{localSub.when}</td>
         <th>Opis:</th>
         <td>{localSub.description}</td>
         <th>Języki</th>
-        <td>{localSub.languages.map(function (lang) {
-          return lang.namePl;
-        }).join(", ")}</td>
-        <th>Lokalizacja</th>
-        <td>Mazowieckie - Warszawa (03-984)</td>
+        <td>{localSub.languages.map(lang => lang.namePl).concat(localSub.languages_other).filter(l => l).join(", ")}</td>
+        <th>Rozważane województwa</th>
+        <td>{localSub.voivodeships ? localSub.voivodeships.map(voivodeship => voivodeship.namePl).join("\n") : 'Wszystkie'}</td>
       </tr>
       <tr>
         <th>Dodatkowe potrzeby</th>

@@ -1,8 +1,10 @@
+import datetime
+
 import factory.fuzzy
 from factory import Faker
 from factory.django import DjangoModelFactory
 
-from house_of_refuge.main.models import HousingResource, HousingType, Submission, SubSource
+from house_of_refuge.main.models import HousingResource, HousingType, Submission, SubSource, Member
 
 
 class HousingResourceFactory(DjangoModelFactory):
@@ -44,22 +46,34 @@ class SubmissionFactory(DjangoModelFactory):
     email = Faker("email")
     phone_number = Faker("phone_number")
     people = Faker('pyint', min_value=1, max_value=20)
-    how_long = "3 dni"
+    how_long = "upToWeek"
+    how_long_other = "3 dni (legacy)"
     description = Faker("sentence")
     traveling_with_pets = "Nie"
     can_stay_with_pets = "Nie"
     contact_person = Faker("name")
     source = SubSource.TERRAIN
+    when = datetime.date(2023, 1, 1)
+    languages_other = "someOtherLang"
 
     @factory.post_generation
     def languages(self, create, extracted, **kwargs):
         if not create:
-            # Simple build, do nothing.
             return
 
         if extracted:
             for lang in extracted:
                 self.languages.add(lang)
+
+    @factory.post_generation
+    def members(self, create, extracted, **kwargs):
+        if not create:
+            return
+
+        if extracted:
+            for member in extracted:
+                Member.objects.create(sex=member['sex'], age_range=member['ageRange'], submission=self)
+
 
     class Meta:
         model = Submission
