@@ -21,13 +21,22 @@ class HousingResourceFactory(DjangoModelFactory):
     city_and_zip_code = Faker("city")
     address = Faker("street_address")
     age = Faker('pyint', min_value=23, max_value=65)
-    languages = "polski"
     when_to_call = "9 - 22"
     living_with_pets = "Nie"
     can_take_person_with_pets = "Tak"
 
     class Meta:
         model = HousingResource
+
+    @factory.post_generation
+    def languages(self, create, extracted, **kwargs):
+        if not create:
+            # Simple build, do nothing.
+            return
+
+        if extracted:
+            for lang in extracted:
+                self.languages.add(lang)
 
 
 class SubmissionFactory(DjangoModelFactory):
@@ -37,13 +46,20 @@ class SubmissionFactory(DjangoModelFactory):
     people = Faker('pyint', min_value=1, max_value=20)
     how_long = "3 dni"
     description = Faker("sentence")
-    origin = "Ukraińskie"
     traveling_with_pets = "Nie"
     can_stay_with_pets = "Nie"
     contact_person = Faker("name")
-    languages = "ukraiński, angielski"
-
     source = SubSource.TERRAIN
+
+    @factory.post_generation
+    def languages(self, create, extracted, **kwargs):
+        if not create:
+            # Simple build, do nothing.
+            return
+
+        if extracted:
+            for lang in extracted:
+                self.languages.add(lang)
 
     class Meta:
         model = Submission

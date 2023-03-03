@@ -58,7 +58,6 @@ class Status(models.TextChoices):
     CONTACT_ATTEMPT = "contact_attempt", _("Próba kontaktu")
 
 
-
 class InternationalizedDictModel(models.Model):
     name = models.CharField(max_length=255, unique=True, primary_key=True)
     namePl = models.CharField(max_length=255)
@@ -70,6 +69,9 @@ class InternationalizedDictModel(models.Model):
 
     def __str__(self):
         return self.name
+
+    def as_json(self):
+        return dict(name=self.name, namePl=self.namePl, nameEn=self.nameEN)
 
 
 class Voivodeship(InternationalizedDictModel):
@@ -903,7 +905,7 @@ class Submission(TimeStampedModel):
             people_count=str(self.people_as_int),
             description=self.description,
             how_long=self.how_long,
-            languages=self.languages,
+            languages=[lang.as_json() for lang in self.languages.all()],
             source=self.source,
             priority=self.priority,
             when=self.when,
@@ -915,7 +917,6 @@ class Submission(TimeStampedModel):
             note=self.note,
             accomodation_in_the_future=self.accomodation_in_the_future,
             status=self.status,
-            origin=self.origin,
             is_today=get_our_today_cutoff(self.created) >= get_our_today_cutoff(),
             traveling_with_pets=self.traveling_with_pets,
             can_stay_with_pets=self.can_stay_with_pets,

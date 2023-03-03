@@ -196,7 +196,9 @@ export function SubmissionRow({sub, activeHandler, user, isGroupCoordinator, isA
         <th>Opis:</th>
         <td>{localSub.description}</td>
         <th>Języki</th>
-        <td>{localSub.languages}</td>
+        <td>{localSub.languages.map(function (lang) {
+          return lang.namePl;
+        }).join(", ")}</td>
         <th>Lokalizacja</th>
         <td>Mazowieckie - Warszawa (03-984)</td>
       </tr>
