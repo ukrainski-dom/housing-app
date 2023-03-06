@@ -24,10 +24,16 @@ class Command(BaseCommand):
         with factory.Faker.override_default_locale(locale):
             self.stdout.write(self.style.NOTICE(f'Generating {host_count} hosts...'))
             for _ in tqdm(range(options['hosts'])):
-                HousingResourceFactory(languages=["polish", "ukrainian"])
+                HousingResourceFactory(languages=["polish", "ukrainian"], voivodeship="mazowieckie",
+                                       facilities=['accessibleForWheelchairs'], animals=["rodents"],
+                                       groups=["elderlyPersonWithGuardian"])
             self.stdout.write(self.style.NOTICE(f'Generating {subs_count} submissions...'))
             for _ in tqdm(range(options['submissions'])):
                 SubmissionFactory(languages=["polish", "ukrainian"],
+                                  voivodeships=["mazowieckie"],
                                   members=members,
-                                  additional_needs=['accessibleForWheelchairs', 'firstFlorOrElevator'])
+                                  additional_needs=['accessibleForWheelchairs', 'firstFlorOrElevator'],
+                                  allergies=["rodents"],
+                                  plans=["rentApartmentOrRoomInPoland"],
+                                  groups=["elderlyPersonWithGuardian"])
             self.stdout.write(self.style.SUCCESS('DONE.'))

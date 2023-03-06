@@ -238,30 +238,29 @@ export const ResourceRow = ({resource, isExpanded, onMatch, user, activeSub, com
         <tr>
           <th>Języki</th>
           {/* FIXME: workaround to use unused languages field as call hint */}
-          <td>{resource.languages}</td>
+          <td>{resource.languages.map(lang => lang.namePl).concat(resource.languages_other).filter(l => l).join(", ")}</td>
           <th>Od kiedy?</th>
-          <td>26/06/2022</td>
+          <td>{resource.availability}</td>
           <th>Na ile?</th>
-          <td>Na miesiąc</td>
+          <td>{resource.how_long}</td>
         </tr>
         <tr>
           <th>Dodatkowe informacje</th>
           <td>{resource.details}</td>
-          <th>Czy są w domu zwierzęta?</th>
-          <td>Kot, Pies</td>
+          <th>Zwierzęta w domu</th>
+          <td>{resource.animals.map(n => n.namePl).concat(resource.animals_other).filter(e => e).map(e => <div key={e}>{e}</div>)}</td>
           <th>Udogodnienia</th>
           <td>
             <ul>
-              <li>Możliwość zakwaterowania osoby/osób ze zwierzęciem/tami</li>
-              <li>Parter lub budynek z windą</li>
+              {resource.facilities.map(n => n.namePl).concat(resource.facilities_other).filter(e => e).map(e => <li key={e}>{e}</li>)}
             </ul>
           </td>
         </tr>
         <tr>
           <th>Ile osób?</th>
-          <td>Dorośli: 4 Dzieci: 4</td>
+          <td>Dorośli: {resource.adults_max_count} Dzieci: {resource.children_max_count}</td>
           <th>Mogę zakwaterować</th>
-          <td>Osoba starsza (samodzielna), Mężczyzna</td>
+          <td>{resource.groups.map(n => n.namePl).concat(resource.groups_other).filter(e => e).map(e => <div key={e}>{e}</div>)}</td>
           <th>Kontakt</th>
           <td>{resource.phone_number + ' ' + resource.email}</td>
         </tr>

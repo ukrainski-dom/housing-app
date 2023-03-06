@@ -20,12 +20,21 @@ class HousingResourceFactory(DjangoModelFactory):
     details = Faker("sentence")
     about_info = Faker("sentence")
     resource = factory.fuzzy.FuzzyChoice(HousingType.values)
+    resource_other = "otherResourceType"
     city_and_zip_code = Faker("city")
     address = Faker("street_address")
     age = Faker('pyint', min_value=23, max_value=65)
     when_to_call = "9 - 22"
     living_with_pets = "Nie"
     can_take_person_with_pets = "Tak"
+    languages_other = "someOtherLang"
+    availability = datetime.date(2023, 1, 1)
+    how_long = "upToWeek"
+    children_max_count = 3
+    adults_max_count = 2
+    facilities_other = "otherFacilities"
+    groups_other = "someOtherGroup"
+    animals_other = "someOtherAnimal"
 
     class Meta:
         model = HousingResource
@@ -40,6 +49,44 @@ class HousingResourceFactory(DjangoModelFactory):
             for lang in extracted:
                 self.languages.add(lang)
 
+    @factory.post_generation
+    def voivodeship(self, create, extracted, **kwargs):
+        if not create:
+            # Simple build, do nothing.
+            return
+
+        if extracted:
+            self.voivodeship_id = extracted
+
+    @factory.post_generation
+    def facilities(self, create, extracted, **kwargs):
+        if not create:
+            # Simple build, do nothing.
+            return
+
+        if extracted:
+            for facility in extracted:
+                self.facilities.add(facility)
+
+    @factory.post_generation
+    def animals(self, create, extracted, **kwargs):
+        if not create:
+            # Simple build, do nothing.
+            return
+
+        if extracted:
+            for animal in extracted:
+                self.animals.add(animal)
+
+    @factory.post_generation
+    def groups(self, create, extracted, **kwargs):
+        if not create:
+            # Simple build, do nothing.
+            return
+
+        if extracted:
+            for group in extracted:
+                self.groups.add(group)
 
 class SubmissionFactory(DjangoModelFactory):
     name = Faker("name")
@@ -60,6 +107,7 @@ class SubmissionFactory(DjangoModelFactory):
     plans_other = "someOtherPlans"
     allergies_other = "someOtherAllergy"
 
+    # todo: voivodeships
     @factory.post_generation
     def languages(self, create, extracted, **kwargs):
         if not create:
@@ -113,6 +161,16 @@ class SubmissionFactory(DjangoModelFactory):
         if extracted:
             for group in extracted:
                 self.groups.add(group)
+
+    @factory.post_generation
+    def voivodeships(self, create, extracted, **kwargs):
+        if not create:
+            return
+
+        if extracted:
+            for voivodeship in extracted:
+                self.voivodeships.add(voivodeship)
+
 
     class Meta:
         model = Submission
