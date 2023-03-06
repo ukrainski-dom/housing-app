@@ -404,7 +404,7 @@ def get_submissions(request):
         s.as_prop()
         for s in Submission.objects.select_related(
             "matcher", "receiver", "coordinator", "resource__owner"
-        ).prefetch_related("languages").filter(modified__gt=updated_after)
+        ).prefetch_related("languages", "additional_needs").filter(modified__gt=updated_after)
     ]
     dropped = [hr.as_prop() for hr in HousingResource.objects.select_related("owner").filter(is_dropped=True)]
     return JsonResponse({"data": dict(submissions=subs, dropped=dropped)})

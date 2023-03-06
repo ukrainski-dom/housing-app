@@ -186,7 +186,7 @@ export function SubmissionRow({sub, activeHandler, user, isGroupCoordinator, isA
               localSub.adults ? ('Dorośli - ' + localSub.adults.length + ': ' + (localSub.adults.map(adult => adult.sex + '/' + adult.ageRange)).join(', ')) : '',
               localSub.children ? ('Dzieci - ' + localSub.children.length + ': ' + (localSub.children.map(child => child.sex + '/' + child.ageRange)).join(', ')) : '',
               localSub.people
-            ].filter(e => e).map(e => <div>{e}</div>)
+            ].filter(e => e).map(e => <div key={e}>{e}</div>)
           }
         </td>
         <th>Jak dlugo?</th>
@@ -205,21 +205,22 @@ export function SubmissionRow({sub, activeHandler, user, isGroupCoordinator, isA
         <th>Języki</th>
         <td>{localSub.languages.map(lang => lang.namePl).concat(localSub.languages_other).filter(l => l).join(", ")}</td>
         <th>Rozważane województwa</th>
-        <td>{localSub.voivodeships ? localSub.voivodeships.map(voivodeship => voivodeship.namePl).join("\n") : 'Wszystkie'}</td>
+        <td>{localSub.voivodeships ? localSub.voivodeships.map(voivodeship => voivodeship.namePl).map(e => <div key={e}>{e}</div>) : <div>Wszystkie</div>}</td>
       </tr>
       <tr>
         <th>Dodatkowe potrzeby</th>
-        <td>Dodatkowe potrzeby,,,</td>
+        <td>{localSub.additional_needs.map(n => n.namePl).concat(localSub.additional_needs_other).filter(e => e).map(e => <div key={e}>{e}</div>)}</td>
         <th>Alergie</th>
-        <td>Alegrie....</td>
+        <td>{localSub.allergies.map(n => n.namePl).concat(localSub.allergies_other).filter(e => e).map(e => <div key={e}>{e}</div>)}</td>
         <th>Osoby narażone</th>
-        <td>ЛГБТКA+; Особа з неповносправністю (самостійна)</td>
+        <td>{localSub.groups.map(n => n.namePl).concat(localSub.groups_other).filter(e => e).map(e => <div key={e}>{e}</div>)}</td>
         <th>Plany</th>
-        <td>Plany...</td>
+        <td>{localSub.plans.map(n => n.namePl).concat(localSub.plans_other).filter(e => e).map(e => <div key={e}>{e}</div>)}</td>
       </tr>
       <tr>
         <th>Pierwsze zgłoszenie?</th>
         <td>Tak</td>
+        <td>{localSub.first_submission}</td>
         <th>Notka</th>
         <td>
           <EditableField value={note} onRename={(note) => updateSub(localSub, {"note": note}, () => setNote(note))}/>

@@ -55,6 +55,10 @@ class SubmissionFactory(DjangoModelFactory):
     source = SubSource.TERRAIN
     when = datetime.date(2023, 1, 1)
     languages_other = "someOtherLang"
+    additional_needs_other = "someOtherNeed"
+    groups_other = "someOtherGroup"
+    plans_other = "someOtherPlans"
+    allergies_other = "someOtherAllergy"
 
     @factory.post_generation
     def languages(self, create, extracted, **kwargs):
@@ -74,6 +78,41 @@ class SubmissionFactory(DjangoModelFactory):
             for member in extracted:
                 Member.objects.create(sex=member['sex'], age_range=member['ageRange'], submission=self)
 
+    @factory.post_generation
+    def additional_needs(self, create, extracted, **kwargs):
+        if not create:
+            return
+
+        if extracted:
+            for need in extracted:
+                self.additional_needs.add(need)
+
+    @factory.post_generation
+    def allergies(self, create, extracted, **kwargs):
+        if not create:
+            return
+
+        if extracted:
+            for allergy in extracted:
+                self.allergies.add(allergy)
+
+    @factory.post_generation
+    def plans(self, create, extracted, **kwargs):
+        if not create:
+            return
+
+        if extracted:
+            for plan in extracted:
+                self.plans.add(plan)
+
+    @factory.post_generation
+    def groups(self, create, extracted, **kwargs):
+        if not create:
+            return
+
+        if extracted:
+            for group in extracted:
+                self.groups.add(group)
 
     class Meta:
         model = Submission

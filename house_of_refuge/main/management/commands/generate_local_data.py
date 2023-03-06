@@ -27,5 +27,7 @@ class Command(BaseCommand):
                 HousingResourceFactory(languages=["polish", "ukrainian"])
             self.stdout.write(self.style.NOTICE(f'Generating {subs_count} submissions...'))
             for _ in tqdm(range(options['submissions'])):
-                SubmissionFactory(languages=["polish", "ukrainian"], members=members)
+                SubmissionFactory(languages=["polish", "ukrainian"],
+                                  members=members,
+                                  additional_needs=['accessibleForWheelchairs', 'firstFlorOrElevator'])
             self.stdout.write(self.style.SUCCESS('DONE.'))
