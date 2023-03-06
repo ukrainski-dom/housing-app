@@ -88,6 +88,7 @@ class HousingResourceFactory(DjangoModelFactory):
             for group in extracted:
                 self.groups.add(group)
 
+
 class SubmissionFactory(DjangoModelFactory):
     name = Faker("name")
     email = Faker("email")
@@ -107,7 +108,6 @@ class SubmissionFactory(DjangoModelFactory):
     plans_other = "someOtherPlans"
     allergies_other = "someOtherAllergy"
 
-    # todo: voivodeships
     @factory.post_generation
     def languages(self, create, extracted, **kwargs):
         if not create:
@@ -171,10 +171,8 @@ class SubmissionFactory(DjangoModelFactory):
             for voivodeship in extracted:
                 self.voivodeships.add(voivodeship)
 
-
     class Meta:
         model = Submission
-
 
 # with factory.Faker.override_default_locale('pl_PL'):
 #     ExampleFactory()

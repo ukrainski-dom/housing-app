@@ -219,7 +219,6 @@ export function SubmissionRow({sub, activeHandler, user, isGroupCoordinator, isA
       </tr>
       <tr>
         <th>Pierwsze zgłoszenie?</th>
-        <td>Tak</td>
         <td>{localSub.first_submission}</td>
         <th>Notka</th>
         <td>
