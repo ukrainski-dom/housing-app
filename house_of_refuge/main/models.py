@@ -33,6 +33,7 @@ class HousingType(models.TextChoices):
     BED_IN_SHARED_ROOM = "bed_in_shared_room", _("Bed in shared room")
     PLACE_IN_HOTEL = "place_in_hotel", _("Place in hotel, hostel or guesthouse")
 
+
 class HowLong(models.TextChoices):
     UP_TO_WEEK = "upToWeek", _("Up to week")
     MONTH = "month", _("Month")
@@ -468,7 +469,7 @@ class HousingResource(TimeStampedModel):
             people_to_accommodate=self.people_to_accommodate,
             costs=self.costs,
             availability=self.availability,
-            how_long=self.how_long,
+            how_long=HowLong(self.how_long).label,
             accommodation_length=self.accommodation_length,
             details=self.details,
             transport=self.transport,
@@ -930,7 +931,7 @@ class Submission(TimeStampedModel):
             additional_needs=[need.as_json() for need in self.additional_needs.all()],
             additional_needs_other=self.additional_needs_other,
             description=self.description,
-            how_long=self.how_long,
+            how_long=HowLong(self.how_long).label,
             how_long_other=self.how_long_other,
             languages=[lang.as_json() for lang in self.languages.all()],
             languages_other=self.languages_other,

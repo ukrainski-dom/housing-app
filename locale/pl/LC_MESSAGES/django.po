@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-03-20 16:06+0100\n"
+"POT-Creation-Date: 2023-03-06 23:23+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,157 +16,247 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=4; plural=(n==1 ? 0 : (n%10>=2 && n%10<=4) && (n"
-"%100<12 || n%100>14) ? 1 : n!=1 && (n%10>=0 && n%10<=1) || (n%10>=5 && n"
-"%10<=9) || (n%100>=12 && n%100<=14) ? 2 : 3);\n"
+"Plural-Forms: nplurals=4; plural=(n==1 ? 0 : (n%10>=2 && n%10<=4) && "
+"(n%100<12 || n%100>14) ? 1 : n!=1 && (n%10>=0 && n%10<=1) || (n%10>=5 && "
+"n%10<=9) || (n%100>=12 && n%100<=14) ? 2 : 3);\n"
 
-#: house_of_refuge/main/admin.py:46
+#: house_of_refuge/main/admin.py:69
 msgid "Mark for deletion"
 msgstr "Oznacz jako do usunięcia"
 
-#: house_of_refuge/main/models.py:28
+#: house_of_refuge/main/models.py:25
 msgid "House"
 msgstr "Dom"
 
-#: house_of_refuge/main/models.py:29
+#: house_of_refuge/main/models.py:26
 msgid "Apartment"
 msgstr "Mieszkanie"
 
-#: house_of_refuge/main/models.py:30
+#: house_of_refuge/main/models.py:27
 msgid "Room"
 msgstr "Pokój"
 
-#: house_of_refuge/main/models.py:31
+#: house_of_refuge/main/models.py:28
 msgid "Couch"
 msgstr "Kanapa"
 
-#: house_of_refuge/main/models.py:32
+#: house_of_refuge/main/models.py:29
 msgid "Mattress"
 msgstr "Materac"
 
-#: house_of_refuge/main/models.py:36
+#: house_of_refuge/main/models.py:30
+msgid "Two rooms"
+msgstr "Dwa pokoje"
+
+#: house_of_refuge/main/models.py:31
+msgid "Room in own house"
+msgstr "Pokój w domu lub w mieszkaniu, gdzie mieszkasz"
+
+#: house_of_refuge/main/models.py:32
+msgid "Separate part of an apartment"
+msgstr "Wydzielona część domu czy lokalu, w którym przebywają inni ludzie"
+
+#: house_of_refuge/main/models.py:33
+msgid "Bed in shared room"
+msgstr "Łóżko w pokoju współdzielonym"
+
+#: house_of_refuge/main/models.py:34
+msgid "Place in hotel, hostel or guesthouse"
+msgstr "Miejsce w hotelu, hostelu, pensjonacie"
+
+#: house_of_refuge/main/models.py:37
+msgid "Up to week"
+msgstr "Kilka dni - do tygodnia"
+
+#: house_of_refuge/main/models.py:38
+msgid "Month"
+msgstr "Na miesiąc"
+
+#: house_of_refuge/main/models.py:39
+msgid "Two months or more"
+msgstr "Na dwa miesiące i więcej"
+
+#: house_of_refuge/main/models.py:41
+msgid "Half a year"
+msgstr "Pół roku"
+
+#: house_of_refuge/main/models.py:42
+msgid "As long as needed"
+msgstr "Tak długo, jak potrzebne"
+
+#: house_of_refuge/main/models.py:46
 msgid "Warsaw"
 msgstr "Warszawa"
 
-#: house_of_refuge/main/models.py:37
+#: house_of_refuge/main/models.py:47
 msgid "Poland"
 msgstr "Polska"
 
-#: house_of_refuge/main/models.py:38
+#: house_of_refuge/main/models.py:48
 msgid "None"
 msgstr "Brak"
 
-#: house_of_refuge/main/models.py:42 house_of_refuge/main/models.py:389
+#: house_of_refuge/main/models.py:52 house_of_refuge/main/models.py:514
 msgid "Fresh"
 msgstr "Świeżak"
 
-#: house_of_refuge/main/models.py:43
+#: house_of_refuge/main/models.py:53
+msgid "Booked"
+msgstr ""
+
+#: house_of_refuge/main/models.py:54
 msgid "Taken"
 msgstr "Zajęta"
 
-#: house_of_refuge/main/models.py:44
+#: house_of_refuge/main/models.py:55
 msgid "Calling"
 msgstr "Dzwonimy"
 
-#: house_of_refuge/main/models.py:45
+#: house_of_refuge/main/models.py:56
 msgid "Ignore"
 msgstr "Ignoruj"
 
-#: house_of_refuge/main/models.py:46
+#: house_of_refuge/main/models.py:57
 msgid "For deletion"
 msgstr "Do usunięcia"
 
-#: house_of_refuge/main/models.py:81 house_of_refuge/main/models.py:433
+#: house_of_refuge/main/models.py:58 house_of_refuge/main/models.py:520
+msgid "Próba kontaktu"
+msgstr ""
+
+#: house_of_refuge/main/models.py:132 house_of_refuge/main/models.py:604
 msgid "Full name"
 msgstr "Imię i nazwisko"
 
-#: house_of_refuge/main/models.py:85
+#: house_of_refuge/main/models.py:136
 msgid "Something about you"
 msgstr "Powiedz coś o sobie"
 
-#: house_of_refuge/main/models.py:86
+#: house_of_refuge/main/models.py:137
 msgid "how old are you? who do you live with (if you'll host at your place)?"
 msgstr "ile masz lat? Z kim mieszkasz (jeśli przyjmujesz kogoś u siebie)?"
 
-#: house_of_refuge/main/models.py:91 house_of_refuge/main/models.py:255
+#: house_of_refuge/main/models.py:143 house_of_refuge/main/models.py:358
 msgid "Resource"
 msgstr "Zasób"
 
-#: house_of_refuge/main/models.py:95
+#: house_of_refuge/main/models.py:148
+#, fuzzy
+#| msgid "Resource (Host)"
+msgid "Resource other"
+msgstr "Zasób (Gospodarz)"
+
+#: house_of_refuge/main/models.py:153
 msgid "City and zip code"
 msgstr "Miasto i kod pocztowy"
 
-#: house_of_refuge/main/models.py:99
+#: house_of_refuge/main/models.py:157
 msgid "Zip code"
 msgstr "Kod pocztowy"
 
-#: house_of_refuge/main/models.py:103
+#: house_of_refuge/main/models.py:161
 msgid "Address"
 msgstr "Adres"
 
-#: house_of_refuge/main/models.py:104
+#: house_of_refuge/main/models.py:162
 msgid "street, building number, appartment number"
 msgstr "ulica, numer budynku, numer mieszkania"
 
-#: house_of_refuge/main/models.py:110 house_of_refuge/main/models.py:115
+#: house_of_refuge/main/models.py:166
+msgid "Adults to accommodate"
+msgstr ""
+
+#: house_of_refuge/main/models.py:170
+#, fuzzy
+#| msgid "Can accomodate pets?"
+msgid "Children to accommodate"
+msgstr "Czy przyjmie zwierzęta?"
+
+#: house_of_refuge/main/models.py:176 house_of_refuge/main/models.py:181
 msgid "Max number of people to accomodate"
 msgstr "Maksymalna liczba ludzi do przyjęcia"
 
-#: house_of_refuge/main/models.py:111 house_of_refuge/main/models.py:116
+#: house_of_refuge/main/models.py:177 house_of_refuge/main/models.py:182
 msgid ""
 "How many people can you support while providing them adequate living "
 "conditions?"
 msgstr "Ile osób jesteś w stanie wesprzeć tak, by miały godne warunki pobytu?"
 
-#: house_of_refuge/main/models.py:122
+#: house_of_refuge/main/models.py:188
 msgid "Age"
 msgstr "Wiek"
 
-#: house_of_refuge/main/models.py:128 house_of_refuge/main/models.py:484
-msgid "Languages"
-msgstr "Języki"
-
-#: house_of_refuge/main/models.py:134
+#: house_of_refuge/main/models.py:194
 msgid "When to call?"
 msgstr "Kiedy można dzwonić?"
 
-#: house_of_refuge/main/models.py:140
+#: house_of_refuge/main/models.py:200
 msgid "Are there pets in the house?"
 msgstr "Czy są w domu zwierzęta?"
 
-#: house_of_refuge/main/models.py:146
+#: house_of_refuge/main/models.py:206
 msgid "Can accomodate pets?"
 msgstr "Czy przyjmie zwierzęta?"
 
-#: house_of_refuge/main/models.py:150
+#: house_of_refuge/main/models.py:210
 msgid "Costs"
 msgstr "Koszty"
 
-#: house_of_refuge/main/models.py:151
+#: house_of_refuge/main/models.py:211
 msgid "Costs of stay - rent, fees, rental costs or free stay"
 msgstr "Koszty pobytu - czynsz, opłaty, koszty najmu lub darmowy pobyt"
 
-#: house_of_refuge/main/models.py:155
+#: house_of_refuge/main/models.py:215
 msgid "Availability"
 msgstr "Dostępność"
 
-#: house_of_refuge/main/models.py:156
+#: house_of_refuge/main/models.py:216
 msgid "When can you start providing the accomodation?"
 msgstr "Od kiedy udostępniasz nocleg?"
 
-#: house_of_refuge/main/models.py:160
+#: house_of_refuge/main/models.py:222 house_of_refuge/main/models.py:624
+#: house_of_refuge/main/models.py:630
+msgid "Length of stay"
+msgstr "Długość pobytu"
+
+#: house_of_refuge/main/models.py:223 house_of_refuge/main/models.py:625
+msgid "For how long (in days)?"
+msgstr "Na jak długo? (liczba dni)"
+
+#: house_of_refuge/main/models.py:227
 msgid "Accommodation length"
 msgstr "Okres pobytu"
 
-#: house_of_refuge/main/models.py:161
+#: house_of_refuge/main/models.py:228
 msgid "For how long can you provide the accomodation?"
 msgstr "Na jak długo udostępniasz nocleg?"
 
-#: house_of_refuge/main/models.py:165
+#: house_of_refuge/main/models.py:235 house_of_refuge/main/models.py:678
+msgid "Languages"
+msgstr "Języki"
+
+#: house_of_refuge/main/models.py:236 house_of_refuge/main/models.py:679
+msgid "Languages that the person speaks"
+msgstr "Języki w których mówi osoba"
+
+#: house_of_refuge/main/models.py:243 house_of_refuge/main/models.py:244
+msgid "Other animals"
+msgstr ""
+
+#: house_of_refuge/main/models.py:250 house_of_refuge/main/models.py:251
+msgid "Other facilities"
+msgstr ""
+
+#: house_of_refuge/main/models.py:258 house_of_refuge/main/models.py:259
+#: house_of_refuge/main/models.py:692 house_of_refuge/main/models.py:693
+msgid "Other groups"
+msgstr ""
+
+#: house_of_refuge/main/models.py:263
 msgid "Details"
 msgstr "Szczegóły"
 
-#: house_of_refuge/main/models.py:166
+#: house_of_refuge/main/models.py:264
 msgid ""
 "A bunch of information about the place - presence of animals, languages "
 "spoken by tenants, availability of bed linen and towels, others"
@@ -174,275 +264,296 @@ msgstr ""
 "Garść informacji o miejscu - obecność zwierząt, języki obce lokatorów i "
 "lokatorek, dostępna pościel i ręczniki, inne"
 
-#: house_of_refuge/main/models.py:171
+#: house_of_refuge/main/models.py:270
 msgid "Transport"
 msgstr "Transport"
 
-#: house_of_refuge/main/models.py:175 house_of_refuge/main/models.py:437
+#: house_of_refuge/main/models.py:275 house_of_refuge/main/models.py:608
 msgid "Phone number"
 msgstr "Numer telefonu"
 
-#: house_of_refuge/main/models.py:181
+#: house_of_refuge/main/models.py:281
 msgid "Backup phone number"
 msgstr "Twój numer telefonu"
 
-#: house_of_refuge/main/models.py:182
+#: house_of_refuge/main/models.py:282
 msgid "An additional contact person"
 msgstr "Dodatkowa osoba kontaktowa)"
 
-#: house_of_refuge/main/models.py:186 house_of_refuge/main/models.py:383
+#: house_of_refuge/main/models.py:286 house_of_refuge/main/models.py:508
+#: house_of_refuge/main/models.py:612
 msgid "Email"
 msgstr "Email"
 
-#: house_of_refuge/main/models.py:193
+#: house_of_refuge/main/models.py:293
 msgid "Extra details"
 msgstr "Dodatkowe szczegóły"
 
-#: house_of_refuge/main/models.py:199 house_of_refuge/main/models.py:508
+#: house_of_refuge/main/models.py:299 house_of_refuge/main/models.py:723
 msgid "Status"
 msgstr "Status"
 
-#: house_of_refuge/main/models.py:207
+#: house_of_refuge/main/models.py:307
 msgid "Owner"
 msgstr "Właściciel"
 
-#: house_of_refuge/main/models.py:211
+#: house_of_refuge/main/models.py:311
 msgid "Will pick the people up"
 msgstr "Przyjedzie odebrać"
 
-#: house_of_refuge/main/models.py:217 house_of_refuge/main/models.py:502
+#: house_of_refuge/main/models.py:317 house_of_refuge/main/models.py:717
 msgid "Note"
 msgstr "Notatka"
 
-#: house_of_refuge/main/models.py:221
+#: house_of_refuge/main/models.py:321
 msgid "Cherry"
 msgstr "Wiśnia"
 
-#: house_of_refuge/main/models.py:225
+#: house_of_refuge/main/models.py:325
 #: house_of_refuge/templates/account/email.html:27
 msgid "Verified"
 msgstr "Zweryfikowane"
 
-#: house_of_refuge/main/models.py:229
+#: house_of_refuge/main/models.py:329
 msgid "Is dropped"
 msgstr "Spadło"
 
-#: house_of_refuge/main/models.py:235
+#: house_of_refuge/main/models.py:335
 msgid "Got hot"
 msgstr "Stało się gorące"
 
-#: house_of_refuge/main/models.py:239
+#: house_of_refuge/main/models.py:339
 msgid "This host offers longer stay"
 msgstr "Gospodarz oferuje moliwość dłuszego pobytu"
 
-#: house_of_refuge/main/models.py:240
+#: house_of_refuge/main/models.py:340
 msgid "Turtle"
 msgstr "Żółw"
 
-#: house_of_refuge/main/models.py:246
+#: house_of_refuge/main/models.py:346
 msgid "Token"
 msgstr "Token"
 
-#: house_of_refuge/main/models.py:256
+#: house_of_refuge/main/models.py:359
 msgid "Resources"
 msgstr "Zasoby"
 
-#: house_of_refuge/main/models.py:382
+#: house_of_refuge/main/models.py:507
 msgid "Site"
 msgstr "Strona"
 
-#: house_of_refuge/main/models.py:384
+#: house_of_refuge/main/models.py:509
 msgid "Terrain"
 msgstr "Teren"
 
-#: house_of_refuge/main/models.py:385
+#: house_of_refuge/main/models.py:510 house_of_refuge/main/models.py:558
 msgid "Other"
 msgstr "Inne"
 
-#: house_of_refuge/main/models.py:390
+#: house_of_refuge/main/models.py:515
 msgid "Searching"
 msgstr "Szukamy"
 
-#: house_of_refuge/main/models.py:391
+#: house_of_refuge/main/models.py:516
 msgid "Host found"
 msgstr "Gospodarz znaleziony"
 
-#: house_of_refuge/main/models.py:392
+#: house_of_refuge/main/models.py:517
 msgid "Gone"
 msgstr "Zniknęła"
 
-#: house_of_refuge/main/models.py:393
+#: house_of_refuge/main/models.py:518
 msgid "Success"
 msgstr "Sukces"
 
-#: house_of_refuge/main/models.py:394
+#: house_of_refuge/main/models.py:519
 msgid "Cancelled"
 msgstr "Nieaktualne"
 
-#: house_of_refuge/main/models.py:441
+#: house_of_refuge/main/models.py:556
+msgid "Male"
+msgstr "Mężczyzna"
+
+#: house_of_refuge/main/models.py:557
+msgid "Female"
+msgstr "Kobieta"
+
+#: house_of_refuge/main/models.py:576
+msgid "Sex"
+msgstr ""
+
+#: house_of_refuge/main/models.py:581
+msgid "Age range"
+msgstr ""
+
+#: house_of_refuge/main/models.py:618
 msgid "The number of people"
 msgstr "Liczba osób"
 
-#: house_of_refuge/main/models.py:445
-msgid "Length of stay"
-msgstr "Długość pobytu"
-
-#: house_of_refuge/main/models.py:446
-msgid "For how long (in days)?"
+#: house_of_refuge/main/models.py:631
+#, fuzzy
+#| msgid "For how long (in days)?"
+msgid "For how long?"
 msgstr "Na jak długo? (liczba dni)"
 
-#: house_of_refuge/main/models.py:450
+#: house_of_refuge/main/models.py:637 house_of_refuge/main/models.py:638
+#, fuzzy
+#| msgid "An additional contact person"
+msgid "Other additional needs"
+msgstr "Dodatkowa osoba kontaktowa)"
+
+#: house_of_refuge/main/models.py:645 house_of_refuge/main/models.py:646
+msgid "Other allergies"
+msgstr ""
+
+#: house_of_refuge/main/models.py:651 house_of_refuge/main/models.py:652
 msgid "Description"
 msgstr "Opis"
 
-#: house_of_refuge/main/models.py:451
-msgid ""
-"Describe the group, age of every person, their relationships (family, "
-"friends?), indicate whether it can be broken into smaller groups"
-msgstr ""
-"Opisz grupę, podaj wiek wszystkich osób, relacje ich łączące (rodzina, "
-"przyjaciele?), zaznacz czy można ich rozbić na mniejsze"
-
-#: house_of_refuge/main/models.py:459
-msgid "Nationality"
-msgstr "Narodowość"
-
-#: house_of_refuge/main/models.py:465
+#: house_of_refuge/main/models.py:658
 msgid "Traveling with pets"
 msgstr "Podróżuje ze zwierzętami"
 
-#: house_of_refuge/main/models.py:471
+#: house_of_refuge/main/models.py:664
 msgid "Can stay with pets"
 msgstr "Może mieszkać ze zwierzętami"
 
-#: house_of_refuge/main/models.py:472
+#: house_of_refuge/main/models.py:665
 msgid "Can the person stay with pets (e.g., due to allergies)?"
 msgstr "Czy osoba może spać w miejscu ze zwierzętami? (np. alergie)"
 
-#: house_of_refuge/main/models.py:478
+#: house_of_refuge/main/models.py:671
 msgid "Contact person"
 msgstr "Osoba kontaktowa"
 
-#: house_of_refuge/main/models.py:485
-msgid "Languages that the person speaks"
-msgstr "Języki w których mówi osoba"
-
-#: house_of_refuge/main/models.py:491
+#: house_of_refuge/main/models.py:685
 msgid "Since when the support is needed"
 msgstr "Od kiedy potrzebuje wsparcia"
 
-#: house_of_refuge/main/models.py:495
+#: house_of_refuge/main/models.py:701 house_of_refuge/main/models.py:702
+#, fuzzy
+#| msgid "Other"
+msgid "Other plans"
+msgstr "Inne"
+
+#: house_of_refuge/main/models.py:706
+#, fuzzy
+#| msgid "Submission"
+msgid "First submission"
+msgstr "Zgłoszenie"
+
+#: house_of_refuge/main/models.py:710
 msgid "Transport needed"
 msgstr "Potrzebny transport"
 
-#: house_of_refuge/main/models.py:514
+#: house_of_refuge/main/models.py:729
 msgid "Person in charge (legacy)"
 msgstr "Kto ogarnia (stare)"
 
-#: house_of_refuge/main/models.py:523
+#: house_of_refuge/main/models.py:738
 msgid "Receiver of the submission"
 msgstr "Przyjmujący zgłoszenie"
 
-#: house_of_refuge/main/models.py:532 house_of_refuge/main/models.py:737
+#: house_of_refuge/main/models.py:747 house_of_refuge/main/models.py:981
 msgid "Coordinator"
 msgstr "Koordynator"
 
-#: house_of_refuge/main/models.py:541
+#: house_of_refuge/main/models.py:756
 msgid "Who found the host"
 msgstr "Kto znalazł gospodarza"
 
-#: house_of_refuge/main/models.py:549
+#: house_of_refuge/main/models.py:764
 msgid "Resource (Host)"
 msgstr "Zasób (Gospodarz)"
 
-#: house_of_refuge/main/models.py:553
+#: house_of_refuge/main/models.py:768
 msgid "Priority"
 msgstr "Priorytet"
 
-#: house_of_refuge/main/models.py:559
+#: house_of_refuge/main/models.py:774
 msgid "Source"
 msgstr "Źródło"
 
-#: house_of_refuge/main/models.py:563
+#: house_of_refuge/main/models.py:778
 msgid "Should be deleted"
 msgstr "Do usuniędia"
 
-#: house_of_refuge/main/models.py:568
+#: house_of_refuge/main/models.py:783
 msgid "Finished at"
 msgstr "Zakończone o"
 
-#: house_of_refuge/main/models.py:579 house_of_refuge/main/models.py:756
+#: house_of_refuge/main/models.py:796 house_of_refuge/main/models.py:1000
 msgid "Submission"
 msgstr "Zgłoszenie"
 
-#: house_of_refuge/main/models.py:580
+#: house_of_refuge/main/models.py:797
 msgid "Submissions"
 msgstr "Zgłoszenia"
 
-#: house_of_refuge/main/models.py:671
+#: house_of_refuge/main/models.py:897
 msgid "Dropped from submission"
 msgstr "Spadło ze zgłoszenia"
 
-#: house_of_refuge/main/models.py:673
+#: house_of_refuge/main/models.py:899
 msgid "Host found by"
 msgstr "Gospodarz znaleziony przez"
 
-#: house_of_refuge/main/models.py:680
+#: house_of_refuge/main/models.py:905
 msgid "Dropped at"
 msgstr "Spadło o"
 
-#: house_of_refuge/main/models.py:720
+#: house_of_refuge/main/models.py:964
 msgid "Remote"
 msgstr "Zdalna"
 
-#: house_of_refuge/main/models.py:721
+#: house_of_refuge/main/models.py:965
 msgid "Station"
 msgstr "Dworzec"
 
-#: house_of_refuge/main/models.py:728 house_of_refuge/main/models.py:749
+#: house_of_refuge/main/models.py:972 house_of_refuge/main/models.py:993
 msgid "User"
 msgstr "Użytkownik"
 
-#: house_of_refuge/main/models.py:733
+#: house_of_refuge/main/models.py:977
 msgid "Group"
 msgstr "Grupa"
 
-#: house_of_refuge/main/models.py:738
+#: house_of_refuge/main/models.py:982
 msgid "Coordinators"
 msgstr "Koordynatorzy"
 
-#: house_of_refuge/main/models.py:763
+#: house_of_refuge/main/models.py:1007
 msgid "Host"
 msgstr "Gospodarz"
 
-#: house_of_refuge/main/models.py:767
+#: house_of_refuge/main/models.py:1011
 msgid "Change"
 msgstr "Zmiana"
 
-#: house_of_refuge/main/models.py:776
+#: house_of_refuge/main/models.py:1020
 msgid "Record Change"
 msgstr "Zmiana Rekordu"
 
-#: house_of_refuge/main/models.py:777
+#: house_of_refuge/main/models.py:1021
 msgid "Record Changes"
 msgstr "Zmiany Rekordów"
 
-#: house_of_refuge/main/models.py:782
+#: house_of_refuge/main/models.py:1026
 msgid "submission throttling"
 msgstr "limity zgłoszeń"
 
-#: house_of_refuge/main/models.py:783
+#: house_of_refuge/main/models.py:1027
 msgid ""
 "Max number of open/searching submissions. Set to 0 to disable throttling."
 msgstr ""
 "maksmymalna liczba zgłoszeń udostępniania/szukania. Ustaw na 0 żeby wyłączyć "
 "limit."
 
-#: house_of_refuge/main/models.py:786
+#: house_of_refuge/main/models.py:1030
 msgid "submission throttling active since"
 msgstr "limit zgłoszeń aktywny od"
 
-#: house_of_refuge/main/models.py:787
+#: house_of_refuge/main/models.py:1031
 msgid ""
 "Only submissions created after this date will be counted in calculating "
 "throttling limit"
@@ -450,11 +561,11 @@ msgstr ""
 "Tylko zgłoszenia utworzone po tej dacie będą liczone przy wyliczaniu limitów "
 "zgłoszeń"
 
-#: house_of_refuge/main/models.py:791 house_of_refuge/main/models.py:794
+#: house_of_refuge/main/models.py:1035 house_of_refuge/main/models.py:1038
 msgid "Site Configuration"
 msgstr "Konfiguracja Strony"
 
-#: house_of_refuge/main/models.py:798
+#: house_of_refuge/main/models.py:1042
 msgid ""
 "You can use <a href='https://docs.github.com/en/get-started/writing-on-"
 "github/getting-started-with-writing-and-formatting-on-github/basic-writing-"
@@ -464,70 +575,62 @@ msgstr ""
 "github/getting-started-with-writing-and-formatting-on-github/basic-writing-"
 "and-formatting-syntax' target='_blank'>Markdowna</a>."
 
-#: house_of_refuge/main/models.py:809
+#: house_of_refuge/main/models.py:1053
 msgid "Identifier"
 msgstr "Identyfikator"
 
-#: house_of_refuge/main/models.py:813
+#: house_of_refuge/main/models.py:1057
 msgid "Title in the primary language"
 msgstr "Tytuł w języku głównym"
 
-#: house_of_refuge/main/models.py:818
+#: house_of_refuge/main/models.py:1062
 msgid "Title in the secondary language"
 msgstr "Tytuł w języku dodatkowym"
 
-#: house_of_refuge/main/models.py:822
+#: house_of_refuge/main/models.py:1066
 msgid "Content in the primary language"
 msgstr "Treść w języku głównym"
 
-#: house_of_refuge/main/models.py:828
+#: house_of_refuge/main/models.py:1072
 msgid "Content in the secondary language"
 msgstr "Treść w języku dodatkowym"
 
-#: house_of_refuge/main/models.py:832
+#: house_of_refuge/main/models.py:1076
 msgid "Published"
 msgstr "Opublikowano"
 
-#: house_of_refuge/main/models.py:848
+#: house_of_refuge/main/models.py:1092
 msgid "Menu Page"
 msgstr "Strona w Menu"
 
-#: house_of_refuge/main/models.py:849
+#: house_of_refuge/main/models.py:1093
 msgid "Menu Pages"
 msgstr "Strony w Menu"
 
-#: house_of_refuge/main/views.py:101
+#: house_of_refuge/main/views.py:102
 msgid "This submission already have a diiferent resource"
 msgstr "To zgłoszenia ma już inny zasób"
 
-#: house_of_refuge/main/views.py:107
+#: house_of_refuge/main/views.py:108
 #, python-brace-format
 msgid "This submission is already processed by {matcher}!"
 msgstr "To zgłoszenie jest już przetwarzane przez {matcher}!"
 
-#: house_of_refuge/main/views.py:121
-msgid "Yay!"
-msgstr "Poszło!"
-
-#: house_of_refuge/main/views.py:140
+#: house_of_refuge/main/views.py:141
 msgid "Note updated!"
 msgstr "Notatka zaktualizowana!"
 
-#: house_of_refuge/main/views.py:151
+#: house_of_refuge/main/views.py:152
 msgid "Link for editing the submission"
 msgstr "Link do edycji zgłoszenia"
 
-#: house_of_refuge/main/views.py:219
+#: house_of_refuge/main/views.py:306
 msgid "Someone is already searching for this request"
 msgstr "Ktoś już szuka tego zgłoszenia"
 
-#: house_of_refuge/main/views.py:227
+#: house_of_refuge/main/views.py:314
 msgid "Someone is already processing this request"
 msgstr "To zgłoszenie jest procesowane przez kogoś innego"
-
-#: house_of_refuge/main/views.py:233
-msgid "This request already has a host"
-msgstr "To zgłoszenie ma już hosta"
 
 #: house_of_refuge/templates/account/account_inactive.html:5
 #: house_of_refuge/templates/account/account_inactive.html:8
@@ -611,8 +714,8 @@ msgstr ""
 #: house_of_refuge/templates/account/email_confirm.html:27
 #, python-format
 msgid ""
-"This e-mail confirmation link expired or is invalid. Please <a href="
-"\"%(email_url)s\">issue a new e-mail confirmation request</a>."
+"This e-mail confirmation link expired or is invalid. Please <a "
+"href=\"%(email_url)s\">issue a new e-mail confirmation request</a>."
 msgstr ""
 
 #: house_of_refuge/templates/account/login.html:7
@@ -640,8 +743,8 @@ msgstr ""
 #: house_of_refuge/templates/account/login.html:41
 #, python-format
 msgid ""
-"If you have not created an account yet, then please <a href=\"%(signup_url)s"
-"\">sign up</a> first."
+"If you have not created an account yet, then please <a "
+"href=\"%(signup_url)s\">sign up</a> first."
 msgstr ""
 
 #: house_of_refuge/templates/account/login.html:55
@@ -813,3 +916,19 @@ msgstr "Nazwa użytkownika"
 #: house_of_refuge/users/views.py:25
 msgid "Information successfully updated"
 msgstr "Informacje zapisane poprawnie"
+
+#~ msgid ""
+#~ "Describe the group, age of every person, their relationships (family, "
+#~ "friends?), indicate whether it can be broken into smaller groups"
+#~ msgstr ""
+#~ "Opisz grupę, podaj wiek wszystkich osób, relacje ich łączące (rodzina, "
+#~ "przyjaciele?), zaznacz czy można ich rozbić na mniejsze"
+
+#~ msgid "Nationality"
+#~ msgstr "Narodowość"
+
+#~ msgid "Yay!"
+#~ msgstr "Poszło!"
+
+#~ msgid "This request already has a host"
+#~ msgstr "To zgłoszenie ma już hosta"

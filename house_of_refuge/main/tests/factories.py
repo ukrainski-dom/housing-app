@@ -107,6 +107,7 @@ class SubmissionFactory(DjangoModelFactory):
     groups_other = "someOtherGroup"
     plans_other = "someOtherPlans"
     allergies_other = "someOtherAllergy"
+    first_submission = True
 
     @factory.post_generation
     def languages(self, create, extracted, **kwargs):

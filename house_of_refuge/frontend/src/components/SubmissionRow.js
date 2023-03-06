@@ -5,6 +5,16 @@ import Select from "react-dropdown-select";
 import {EditableField} from "./Shared";
 import {toast} from "react-toastify";
 
+export const SEX_DISPLAY_MAP = {
+  "male": "M",
+  "female": "K",
+  "other": "I",
+};
+
+const getSexDisplay = (s) => {
+  return SEX_DISPLAY_MAP[s] || s;
+};
+
 const getStatusDisplay = (status) => {
   const option = SUB_STATE_OPTIONS.filter(o => o.value === status)[0];
   return option.label;
@@ -183,8 +193,8 @@ export function SubmissionRow({sub, activeHandler, user, isGroupCoordinator, isA
         <td>
           {
             [
-              localSub.adults ? ('Dorośli - ' + localSub.adults.length + ': ' + (localSub.adults.map(adult => adult.sex + '/' + adult.ageRange)).join(', ')) : '',
-              localSub.children ? ('Dzieci - ' + localSub.children.length + ': ' + (localSub.children.map(child => child.sex + '/' + child.ageRange)).join(', ')) : '',
+              localSub.adults ? ('Dorośli - ' + localSub.adults.length + ': ' + (localSub.adults.map(adult => getSexDisplay(adult.sex) + '/' + adult.ageRange)).join(', ')) : '',
+              localSub.children ? ('Dzieci - ' + localSub.children.length + ': ' + (localSub.children.map(child => getSexDisplay(child.sex) + '/' + child.ageRange)).join(', ')) : '',
               localSub.people
             ].filter(e => e).map(e => <div key={e}>{e}</div>)
           }
@@ -219,7 +229,7 @@ export function SubmissionRow({sub, activeHandler, user, isGroupCoordinator, isA
       </tr>
       <tr>
         <th>Pierwsze zgłoszenie?</th>
-        <td>{localSub.first_submission}</td>
+        <td>{localSub.first_submission ? 'Tak' : 'Nie'}</td>
         <th>Notka</th>
         <td>
           <EditableField value={note} onRename={(note) => updateSub(localSub, {"note": note}, () => setNote(note))}/>

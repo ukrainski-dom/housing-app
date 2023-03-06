@@ -97,7 +97,16 @@ const STATUS_OPTIONS = [
 ];
 
 export const RESOURCE_MAP = {
-  "home": "Dom", "flat": "Mieszkanie", "room": "Pokój", "couch": "Kanapa", "mattress": "Materac"
+  "home": "Dom",
+  "flat": "Mieszkanie",
+  "room": "Pokój",
+  "couch": "Kanapa",
+  "mattress": "Materac",
+  "two_rooms": "Dwa pokoje",
+  "room_in_own_house": "Pokój w domu lub w mieszkaniu, gdzie mieszkasz",
+  "separate_part_of_apartment": "Wydzielona część domu czy lokalu, w którym przebywają inni ludzie",
+  "bed_in_shared_room": "Łóżko w pokoju współdzielonym",
+  "place_in_hotel": "Miejsce w hotelu, hostelu, pensjonacie"
 };
 
 const getResourceDisplay = (r) => {
