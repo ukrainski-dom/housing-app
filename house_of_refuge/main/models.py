@@ -466,7 +466,7 @@ class HousingResource(TimeStampedModel):
             full_address=self.full_address,
             adults_max_count=self.adults_max_count,
             children_max_count=self.children_max_count,
-            people_to_accommodate=self.people_to_accommodate,
+            people_to_accommodate=self.people_to_accommodate + self.adults_max_count + self.children_max_count,
             costs=self.costs,
             availability=self.availability,
             how_long=HowLong(self.how_long).label,
@@ -598,11 +598,23 @@ class Member(models.Model):
             "ageRange": self.age_range
         }
 
+
+class Place(models.TextChoices):
+    IN_POLAND = "inPoland", _("In Poland")
+    ON_BORDER = "onBorder", _("On border")
+
+
 class Submission(TimeStampedModel):
     name = models.CharField(
         max_length=512,
         null=False,
         verbose_name=_("Full name"),
+    )
+    currentPlace = models.CharField(
+        choices=Place.choices,
+        null=True,
+        max_length=255,
+        verbose_name=_("Current location"),
     )
     phone_number = models.CharField(
         max_length=128,
@@ -823,9 +835,8 @@ class Submission(TimeStampedModel):
             self.finished_at = timezone.now()
         return super(Submission, self).save(*args, **kwargs)
 
-    @property
     def people_as_int(self):
-        return extract_number_from_string(self.people, default=1)
+        return Member.objects.filter(submission=self).count()
 
     @property
     def accomodation_in_the_future(self):
@@ -882,7 +893,7 @@ class Submission(TimeStampedModel):
             finished_at=self.finished_at,
             finished_day=get_our_today_cutoff(self.finished_at) if self.finished_at else None,
             source=self.source,
-            people_count=self.people_as_int,
+            people_count=self.people_as_int(),
             day=get_our_today_cutoff(self.created.astimezone(timezone.get_default_timezone())),
             first_searched=first_searched,
             first_searched_hour=first_searched.hour if first_searched else None,
@@ -922,12 +933,13 @@ class Submission(TimeStampedModel):
             created=created,
             name=self.name,
             email=self.email,
+            currentPlace=self.currentPlace,
             phone_number=get_phone_number_display(self.phone_number),
             voivodeships=[voivodeship.as_json() for voivodeship in self.voivodeships.all()],
             children=children,
             adults=adults,
             people=self.people,
-            people_count=str(self.people_as_int),
+            people_count=str(self.people_as_int()),
             additional_needs=[need.as_json() for need in self.additional_needs.all()],
             additional_needs_other=self.additional_needs_other,
             description=self.description,

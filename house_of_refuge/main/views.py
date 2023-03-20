@@ -38,7 +38,7 @@ def housing_list(request):
         coords[c.group].append(c.as_json())
 
     people_helped = sum([
-        sub.people_as_int
+        sub.people_as_int()
         for sub in Submission.objects.for_happy_message()
     ])
 
@@ -262,6 +262,7 @@ def create_submission_integration_v2(request):
     json_body = json.loads(request.body)
     sub = Submission(
         name=json_body["name"],
+        currentPlace=json_body["currentPlace"],
         phone_number=json_body["phoneNumber"],
         email=json_body["email"],
         when=datetime.datetime.strptime(json_body["fromDate"], "%Y-%m-%d"),
@@ -483,7 +484,7 @@ def activity_stats_view(request):
 @login_required
 def get_helped_count(request):
     people_helped = sum([
-        sub.people_as_int
+        sub.people_as_int()
         for sub in Submission.objects.for_happy_message()
     ])
     return JsonResponse({"count": people_helped})

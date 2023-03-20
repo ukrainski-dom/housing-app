@@ -12,7 +12,7 @@ class HousingResourceFactory(DjangoModelFactory):
     email = Faker("email")
     zip_code = Faker("postcode")
     costs = "0"
-    people_to_accommodate = Faker('pyint', min_value=1, max_value=6)
+    people_to_accommodate = 0
     accommodation_length = Faker('pyint', min_value=1, max_value=30)
     phone_number = Faker("phone_number")
     backup_phone_number = Faker("phone_number")
@@ -91,6 +91,7 @@ class HousingResourceFactory(DjangoModelFactory):
 
 class SubmissionFactory(DjangoModelFactory):
     name = Faker("name")
+    currentPlace = "inPoland"
     email = Faker("email")
     phone_number = Faker("phone_number")
     people = Faker('pyint', min_value=1, max_value=20)
