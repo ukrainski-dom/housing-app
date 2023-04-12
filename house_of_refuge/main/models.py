@@ -42,6 +42,15 @@ class HowLong(models.TextChoices):
     HALF_YEAR = "halfYear", _("Half a year")
     AS_LONG_AS_NEEDED = "asLongAsNeeded", _("As long as needed")
 
+    def to_number(self):
+        return {
+            self.UP_TO_WEEK: 7,
+            self.MONTH: 30,
+            self.TWO_MONTHS_OR_MORE: 60,
+            self.HALF_YEAR: 180,
+            self.AS_LONG_AS_NEEDED: 999
+        }.get(self)
+
 
 class TransportRange(models.TextChoices):
     WARSAW = "warsaw", _("Warsaw")
@@ -469,8 +478,10 @@ class HousingResource(TimeStampedModel):
             people_to_accommodate=self.people_to_accommodate + self.adults_max_count + self.children_max_count,
             costs=self.costs,
             availability=self.availability,
-            how_long=HowLong(self.how_long).label,
-            accommodation_length=self.accommodation_length,
+            how_long=HowLong(self.how_long).label if self.how_long else extract_number_from_string(
+                self.accommodation_length, default=self.accommodation_length),
+            accommodation_length=HowLong(self.how_long).to_number() if self.how_long else extract_number_from_string(
+                self.accommodation_length, default=self.accommodation_length),
             details=self.details,
             transport=self.transport,
             phone_number=get_phone_number_display(self.phone_number),

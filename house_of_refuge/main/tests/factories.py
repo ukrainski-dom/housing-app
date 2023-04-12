@@ -13,7 +13,6 @@ class HousingResourceFactory(DjangoModelFactory):
     zip_code = Faker("postcode")
     costs = "0"
     people_to_accommodate = 0
-    accommodation_length = Faker('pyint', min_value=1, max_value=30)
     phone_number = Faker("phone_number")
     backup_phone_number = Faker("phone_number")
     transport = "warsaw"
