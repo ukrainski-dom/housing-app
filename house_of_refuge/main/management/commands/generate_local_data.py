@@ -14,14 +14,26 @@ class Command(BaseCommand):
         parser.add_argument('--locale', default="pl_PL", type=str)
 
     def handle(self, *args, **options):
+        members = [
+            {"ageRange": "0-5", "sex": "male"},
+            {"ageRange": "18-24", "sex": "female"}
+        ]
         locale = options['locale']
         host_count = options['hosts']
         subs_count = options['submissions']
         with factory.Faker.override_default_locale(locale):
             self.stdout.write(self.style.NOTICE(f'Generating {host_count} hosts...'))
             for _ in tqdm(range(options['hosts'])):
-                HousingResourceFactory()
+                HousingResourceFactory(languages=["polish", "ukrainian"], voivodeship="mazowieckie",
+                                       facilities=['accessibleForWheelchairs'], animals=["rodents"],
+                                       groups=["elderlyPersonWithGuardian"])
             self.stdout.write(self.style.NOTICE(f'Generating {subs_count} submissions...'))
             for _ in tqdm(range(options['submissions'])):
-                SubmissionFactory()
+                SubmissionFactory(languages=["polish", "ukrainian"],
+                                  voivodeships=["mazowieckie"],
+                                  members=members,
+                                  additional_needs=['accessibleForWheelchairs', 'firstFlorOrElevator'],
+                                  allergies=["rodents"],
+                                  plans=["rentApartmentOrRoomInPoland"],
+                                  groups=["elderlyPersonWithGuardian"])
             self.stdout.write(self.style.SUCCESS('DONE.'))

@@ -27,6 +27,29 @@ class HousingType(models.TextChoices):
     ROOM = "room", _("Room")
     COUCH = "couch", _("Couch")
     MATTRESS = "mattress", _("Mattress")
+    TWO_ROOMS = "two_rooms", _("Two rooms")
+    ROOM_IN_OWN_HOUSE = "room_in_own_house", _("Room in own house")
+    SEPARATE_PART_OF_APARTMENT = "separate_part_of_apartment", _("Separate part of an apartment")
+    BED_IN_SHARED_ROOM = "bed_in_shared_room", _("Bed in shared room")
+    PLACE_IN_HOTEL = "place_in_hotel", _("Place in hotel, hostel or guesthouse")
+
+
+class HowLong(models.TextChoices):
+    UP_TO_WEEK = "upToWeek", _("Up to week")
+    MONTH = "month", _("Month")
+    TWO_MONTHS_OR_MORE = "twoMonthsOrMore", _("Two months or more")
+    # options for housing resources
+    HALF_YEAR = "halfYear", _("Half a year")
+    AS_LONG_AS_NEEDED = "asLongAsNeeded", _("As long as needed")
+
+    def to_number(self):
+        return {
+            self.UP_TO_WEEK: 7,
+            self.MONTH: 30,
+            self.TWO_MONTHS_OR_MORE: 60,
+            self.HALF_YEAR: 180,
+            self.AS_LONG_AS_NEEDED: 999
+        }.get(self)
 
 
 class TransportRange(models.TextChoices):
@@ -44,6 +67,45 @@ class Status(models.TextChoices):
     SHOULD_DELETE = "should_delete", _("For deletion")
     CONTACT_ATTEMPT = "contact_attempt", _("Próba kontaktu")
 
+
+class InternationalizedDictModel(models.Model):
+    name = models.CharField(max_length=255, unique=True, primary_key=True)
+    namePl = models.CharField(max_length=255)
+    nameEN = models.CharField(max_length=255)
+
+    class Meta:
+        abstract = True
+        ordering = ['name']
+
+    def __str__(self):
+        return self.name
+
+    def as_json(self):
+        return dict(name=self.name, namePl=self.namePl, nameEn=self.nameEN)
+
+
+class Voivodeship(InternationalizedDictModel):
+    pass
+
+
+class RefugeeGroup(InternationalizedDictModel):
+    pass
+
+
+class AdditionalNeed(InternationalizedDictModel):
+    pass
+
+
+class Animal(InternationalizedDictModel):
+    pass
+
+
+class Plans(InternationalizedDictModel):
+    pass
+
+
+class Language(InternationalizedDictModel):
+    pass
 
 class HousingResourceManager(Manager):
 
@@ -79,7 +141,7 @@ class HousingResource(TimeStampedModel):
         null=False,
         verbose_name=_("Full name"),
     )
-    about_info = models.TextField(
+    about_info = models.TextField(  # legacy
         max_length=2048,
         verbose_name=_("Something about you"),
         help_text=_("how old are you? who do you live with (if you'll host at your place)?"),
@@ -90,7 +152,13 @@ class HousingResource(TimeStampedModel):
         max_length=1024,
         verbose_name=_("Resource"),
     )
-    city_and_zip_code = models.CharField(
+    resource_other = models.CharField(
+        null=True,
+        max_length=1024,
+        verbose_name=_("Resource other"),
+    )
+    voivodeship = models.ForeignKey('Voivodeship', null=True, on_delete=models.DO_NOTHING)
+    city_and_zip_code = models.CharField( # legacy
         max_length=512,
         verbose_name=_("City and zip code"),
     )
@@ -98,54 +166,56 @@ class HousingResource(TimeStampedModel):
         max_length=8,
         verbose_name=_("Zip code"),
     )
-    address = models.CharField(
+    address = models.CharField(  # legacy
         max_length=512,
         verbose_name=_("Address"),
         help_text=_("street, building number, appartment number"),
     )
-    people_to_accommodate_raw = models.CharField(
+    adults_max_count = models.IntegerField(
+        null=True,
+        verbose_name=_("Adults to accommodate"),
+    )
+    children_max_count = models.IntegerField(
+        null=True,
+        verbose_name=_("Children to accommodate"),
+    )
+    people_to_accommodate_raw = models.CharField(  # legacy
         max_length=1024,
         blank=True,
         default="",
         verbose_name=_("Max number of people to accomodate"),
         help_text=_("How many people can you support while providing them adequate living conditions?"),
     )
-    people_to_accommodate = models.IntegerField(
+    people_to_accommodate = models.IntegerField(  # legacy
         default=0,
         verbose_name=_("Max number of people to accomodate"),
         help_text=_("How many people can you support while providing them adequate living conditions?"),
     )
-    age = models.CharField(
+    age = models.CharField(  # legacy
         max_length=512,
         default="",
         blank=True,
         verbose_name=_("Age"),
     )
-    languages = models.CharField(
-        max_length=512,
-        default="",
-        blank=True,
-        verbose_name=_("Languages"),
-    )
-    when_to_call = models.CharField(
+    when_to_call = models.CharField(  # legacy
         max_length=1024,
         default="",
         blank=True,
         verbose_name=_("When to call?"),
     )
-    living_with_pets = models.CharField(
+    living_with_pets = models.CharField(  # legacy
         max_length=1024,
         null=True,
         blank=True,
         verbose_name=_("Are there pets in the house?"),
     )
-    can_take_person_with_pets = models.CharField(
+    can_take_person_with_pets = models.CharField(  # legacy
         max_length=512,
         null=True,
         blank=True,
         verbose_name=_("Can accomodate pets?"),
     )
-    costs = models.CharField(
+    costs = models.CharField(  # legacy
         max_length=1024,
         verbose_name=_("Costs"),
         help_text=_("Costs of stay - rent, fees, rental costs or free stay"),
@@ -155,10 +225,48 @@ class HousingResource(TimeStampedModel):
         verbose_name=_("Availability"),
         help_text=_("When can you start providing the accomodation?"),
     )
-    accommodation_length = models.CharField(
+    how_long = models.CharField(
+        choices=HowLong.choices,
+        null=True,
+        max_length=255,
+        verbose_name=_("Length of stay"),
+        help_text=_("For how long (in days)?"),
+    )
+    accommodation_length = models.CharField(  # legacy
         max_length=1024,
         verbose_name=_("Accommodation length"),
         help_text=_("For how long can you provide the accomodation?"),
+    )
+    languages = models.ManyToManyField(Language, blank=True)
+    languages_other = models.CharField(
+        max_length=1024,
+        null=True,
+        blank=True,
+        verbose_name=_("Languages"),
+        help_text=_("Languages that the person speaks"),
+    )
+    animals = models.ManyToManyField(Animal, blank=True)
+    animals_other = models.CharField(
+        max_length=512,
+        null=True,
+        blank=True,
+        verbose_name=_("Other animals"),
+        help_text=_("Other animals"),
+    )
+    facilities = models.ManyToManyField(AdditionalNeed, blank=True)
+    facilities_other = models.CharField(
+        max_length=1024,
+        null=True,
+        verbose_name=_("Other facilities"),
+        help_text=_("Other facilities"),
+    )
+    groups = models.ManyToManyField(RefugeeGroup, blank=True)
+    groups_other = models.CharField(
+        max_length=255,
+        null=True,
+        blank=True,
+        verbose_name=_("Other groups"),
+        help_text=_("Other groups"),
     )
     details = models.TextField(
         max_length=2048,
@@ -166,7 +274,7 @@ class HousingResource(TimeStampedModel):
         help_text=_("A bunch of information about the place - presence of animals, languages spoken by tenants, availability of bed linen and towels, others"),
         blank=True
     )
-    transport = models.CharField(
+    transport = models.CharField(  # legacy
         choices=TransportRange.choices,
         max_length=16,
         verbose_name=_("Transport"),
@@ -176,7 +284,7 @@ class HousingResource(TimeStampedModel):
         max_length=128,
         verbose_name=_("Phone number"),
     )
-    backup_phone_number = models.CharField(
+    backup_phone_number = models.CharField(  # legacy
         max_length=128,
         default="",
         blank=True,
@@ -187,7 +295,7 @@ class HousingResource(TimeStampedModel):
         unique=False,
         verbose_name=_("Email"),
     )
-    extra = models.CharField(
+    extra = models.CharField(  # legacy
         max_length=2048,
         null=True,
         default="",
@@ -365,10 +473,15 @@ class HousingResource(TimeStampedModel):
             zip_code=self.zip_code,
             address=self.address,
             full_address=self.full_address,
-            people_to_accommodate=self.people_to_accommodate,
+            adults_max_count=self.adults_max_count,
+            children_max_count=self.children_max_count,
+            people_to_accommodate=self.people_to_accommodate + self.adults_max_count + self.children_max_count,
             costs=self.costs,
             availability=self.availability,
-            accommodation_length=self.accommodation_length,
+            how_long=HowLong(self.how_long).label if self.how_long else extract_number_from_string(
+                self.accommodation_length, default=self.accommodation_length),
+            accommodation_length=HowLong(self.how_long).to_number() if self.how_long else extract_number_from_string(
+                self.accommodation_length, default=self.accommodation_length),
             details=self.details,
             transport=self.transport,
             phone_number=get_phone_number_display(self.phone_number),
@@ -380,7 +493,14 @@ class HousingResource(TimeStampedModel):
             cherry=self.cherry,
             turtle=self.turtle,
             verified=self.verified,
-            languages=self.languages,
+            languages=[lang.as_json() for lang in self.languages.all()],
+            languages_other=self.languages_other,
+            animals=[animal.as_json() for animal in self.animals.all()],
+            animals_other=self.animals_other,
+            groups=[group.as_json() for group in self.groups.all()],
+            groups_other=self.groups_other,
+            facilities=[facility.as_json() for facility in self.facilities.all()],
+            facilities_other=self.facilities_other,
             when_to_call=self.when_to_call,
             living_with_pets=self.living_with_pets,
             can_take_person_with_pets=self.can_take_person_with_pets,
@@ -444,45 +564,130 @@ class SubmissionManager(Manager):
         return self.filter(finished_at__gte=cut_off, status=SubStatus.SUCCESS).only("people")
 
 
+class Sex(models.TextChoices):
+    MALE = "male", _("Male")
+    FEMALE = "female", _("Female")
+    OTHER = "other", _("Other")
+
+
+class AgeRange(models.TextChoices):
+    AGE0_5 = "0-5", _("0-5")
+    AGE6_9 = "6-9", _("6-9")
+    AGE10_14 = "10-14", _("10-14")
+    AGE15_17 = "15-17", _("15-17")
+    AGE18_24 = "18-24", _("18-24")
+    AGE25_34 = "25-34", _("25-34")
+    AGE35_49 = "35-49", _("35-49")
+    AGE50_PLUS = "50+", _("50+")
+
+
+class Member(models.Model):
+    sex = models.CharField(
+        choices=Sex.choices,
+        max_length=32,
+        verbose_name=_("Sex"),
+    )
+    age_range = models.CharField(
+        choices=AgeRange.choices,
+        max_length=32,
+        verbose_name=_("Age range"),
+    )
+    submission = models.ForeignKey('Submission', on_delete=models.CASCADE)
+
+    class Meta:
+        ordering = ['age_range']
+
+    def is_child(self):
+        return self.age_range in [AgeRange.AGE0_5, AgeRange.AGE6_9, AgeRange.AGE15_17]
+
+    def __str__(self):
+        return self.age_range + ' ' + self.sex
+
+    def as_json(self):
+        return {
+            "sex": self.sex,
+            "ageRange": self.age_range
+        }
+
+
+class Place(models.TextChoices):
+    IN_POLAND = "inPoland", _("In Poland")
+    ON_BORDER = "onBorder", _("On border")
+
+
 class Submission(TimeStampedModel):
     name = models.CharField(
         max_length=512,
         null=False,
         verbose_name=_("Full name"),
     )
+    current_place = models.CharField(
+        choices=Place.choices,
+        null=True,
+        max_length=255,
+        verbose_name=_("Current location"),
+    )
     phone_number = models.CharField(
         max_length=128,
         verbose_name=_("Phone number"),
     )
-    people = models.CharField(
-        max_length=128,
+    email = models.EmailField(
+        unique=False,
+        verbose_name=_("Email"),
+        null=True
+    )
+    voivodeships = models.ManyToManyField(Voivodeship, blank=True)
+    people = models.CharField(  # legacy but let's leave it for migration time
+        max_length=2048,
         verbose_name=_("The number of people"),
     )
     how_long = models.CharField(
-        max_length=128,
+        choices=HowLong.choices,
+        null=True,
+        max_length=255,
         verbose_name=_("Length of stay"),
         help_text=_("For how long (in days)?"),
     )
+    how_long_other = models.CharField(  # legacy - renamed from how_long
+        max_length=255,
+        null=True,
+        verbose_name=_("Length of stay"),
+        help_text=_("For how long?"),
+    )
+    additional_needs = models.ManyToManyField(AdditionalNeed, blank=True)
+    additional_needs_other = models.CharField(
+        max_length=1024,
+        null=True,
+        verbose_name=_("Other additional needs"),
+        help_text=_("Other additional needs"),
+    )
+    allergies = models.ManyToManyField(Animal, blank=True)
+    allergies_other = models.CharField(
+        max_length=512,
+        null=True,
+        blank=True,
+        verbose_name=_("Other allergies"),
+        help_text=_("Other allergies"),
+    )
     description = models.CharField(
         max_length=2048,
+        null=True,
         verbose_name=_("Description"),
-        help_text=_("Describe the group, age of every person, "
-            "their relationships (family, friends?), "
-            "indicate whether it can be broken into smaller groups"),
-        )
-    origin = models.CharField(
+        help_text=_("Description"),
+    )
+    origin = models.CharField(  # legacy
         max_length=512,
         blank=True,
         default="",
         verbose_name=_("Nationality"),
     )
-    traveling_with_pets = models.CharField(
+    traveling_with_pets = models.CharField(  # legacy
         max_length=1024,
         null=True,
         blank=True,
         verbose_name=_("Traveling with pets"),
     )
-    can_stay_with_pets = models.CharField(
+    can_stay_with_pets = models.CharField(  # legacy
         max_length=512,
         null=True,
         blank=True,
@@ -495,7 +700,8 @@ class Submission(TimeStampedModel):
         blank=True,
         verbose_name=_("Contact person"),
     )
-    languages = models.CharField(
+    languages = models.ManyToManyField(Language, blank=True)
+    languages_other = models.CharField(
         max_length=1024,
         null=True,
         blank=True,
@@ -508,7 +714,28 @@ class Submission(TimeStampedModel):
         blank=True,
         verbose_name=_("Since when the support is needed"),
     )
-    transport_needed = models.BooleanField(
+    groups = models.ManyToManyField(RefugeeGroup, blank=True)
+    groups_other = models.CharField(
+        max_length=255,
+        null=True,
+        blank=True,
+        verbose_name=_("Other groups"),
+        help_text=_("Other groups"),
+    )
+    plans = models.ManyToManyField(Plans, blank=True)
+    # todo: add max length validation in forms app
+    plans_other = models.CharField(
+        max_length=255,
+        null=True,
+        blank=True,
+        verbose_name=_("Other plans"),
+        help_text=_("Other plans"),
+    )
+    first_submission = models.BooleanField(
+        null=True,
+        verbose_name=_("First submission"),
+    )
+    transport_needed = models.BooleanField(  # legacy
         default=True,
         verbose_name=_("Transport needed"),
     )
@@ -525,7 +752,7 @@ class Submission(TimeStampedModel):
         max_length=32,
         verbose_name=_("Status"),
     )
-    person_in_charge_old = models.CharField(
+    person_in_charge_old = models.CharField(  # legacy
         max_length=512,
         default="",
         blank=True,
@@ -625,9 +852,8 @@ class Submission(TimeStampedModel):
             self.finished_at = timezone.now()
         return super(Submission, self).save(*args, **kwargs)
 
-    @property
     def people_as_int(self):
-        return extract_number_from_string(self.people, default=1)
+        return self.member_set.count()
 
     @property
     def accomodation_in_the_future(self):
@@ -684,7 +910,7 @@ class Submission(TimeStampedModel):
             finished_at=self.finished_at,
             finished_day=get_our_today_cutoff(self.finished_at) if self.finished_at else None,
             source=self.source,
-            people_count=self.people_as_int,
+            people_count=self.people_as_int(),
             day=get_our_today_cutoff(self.created.astimezone(timezone.get_default_timezone())),
             first_searched=first_searched,
             first_searched_hour=first_searched.hour if first_searched else None,
@@ -711,6 +937,9 @@ class Submission(TimeStampedModel):
         self.save()
 
     def as_prop(self):
+        members = self.member_set.all()
+        adults = [adult.as_json() for adult in filter(lambda m: not m.is_child(), members)]
+        children = [child.as_json() for child in filter(lambda m: m.is_child(), members)]
         try:
             created = self.created.astimezone(timezone.get_default_timezone()).strftime("%-d %B %H:%M:%S")
         except ValueError:
@@ -720,24 +949,39 @@ class Submission(TimeStampedModel):
             created_raw=self.created,
             created=created,
             name=self.name,
+            email=self.email,
+            current_place=self.current_place,
             phone_number=get_phone_number_display(self.phone_number),
+            voivodeships=[voivodeship.as_json() for voivodeship in self.voivodeships.all()],
+            children=children,
+            adults=adults,
             people=self.people,
-            people_count=str(self.people_as_int),
+            people_count=str(self.people_as_int()),
+            additional_needs=[need.as_json() for need in self.additional_needs.all()],
+            additional_needs_other=self.additional_needs_other,
             description=self.description,
-            how_long=self.how_long,
-            languages=self.languages,
+            how_long=HowLong(self.how_long).label,
+            how_long_other=self.how_long_other,
+            languages=[lang.as_json() for lang in self.languages.all()],
+            languages_other=self.languages_other,
+            allergies=[allergy.as_json() for allergy in self.allergies.all()],
+            allergies_other=self.allergies_other,
+            groups=[group.as_json() for group in self.groups.all()],
+            groups_other=self.groups_other,
+            plans=[plan.as_json() for plan in self.plans.all()],
+            plans_other=self.plans_other,
             source=self.source,
             priority=self.priority,
             when=self.when,
             contact_person=self.contact_person,
             transport_needed=self.transport_needed,
+            first_submission=self.first_submission,
             receiver=self.receiver.as_json() if self.receiver else None,
             coordinator=self.coordinator.as_json() if self.coordinator else None,
             matcher=self.matcher.as_json() if self.matcher else None,
             note=self.note,
             accomodation_in_the_future=self.accomodation_in_the_future,
             status=self.status,
-            origin=self.origin,
             is_today=get_our_today_cutoff(self.created) >= get_our_today_cutoff(),
             traveling_with_pets=self.traveling_with_pets,
             can_stay_with_pets=self.can_stay_with_pets,

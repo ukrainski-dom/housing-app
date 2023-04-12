@@ -5,6 +5,25 @@ import Select from "react-dropdown-select";
 import {EditableField} from "./Shared";
 import {toast} from "react-toastify";
 
+export const SEX_DISPLAY_MAP = {
+  "male": "M",
+  "female": "K",
+  "other": "I",
+};
+
+const getSexDisplay = (s) => {
+  return SEX_DISPLAY_MAP[s] || s;
+};
+
+export const CURRENT_PLACE_DISPLAY_MAP = {
+  "inPoland": "w Polsce",
+  "onBorder": "na granicy",
+};
+
+const getCurrentPlaceDisplay = (place) => {
+  return CURRENT_PLACE_DISPLAY_MAP[place] || place;
+};
+
 const getStatusDisplay = (status) => {
   const option = SUB_STATE_OPTIONS.filter(o => o.value === status)[0];
   return option.label;
@@ -60,12 +79,14 @@ export function SubmissionRow({sub, activeHandler, user, isGroupCoordinator, isA
   const isCoordinator = user.id === sub.coordinator?.id;
   const [status, setStatus] = useState(sub.status);
   const [note, setNote] = useState(sub.note);
+  const [when, setWhen] = useState(sub.when);
   const [localSub, setLocalSub] = useState(sub);
   const [collapsed, setCollapsed] = useState(false);
 
   useEffect(() => {
     setLocalSub(sub);
     setNote(sub.note);
+    setWhen(sub.when);
     setStatus(sub.status);
   }, [sub]);
 
@@ -177,55 +198,56 @@ export function SubmissionRow({sub, activeHandler, user, isGroupCoordinator, isA
     <Table className="sub-table" style={{'background-color': 'rgba(255, 255, 255, 0.95)', display: collapsed ? 'none' : 'table'}}>
       <tbody>
       <tr>
-        <th>Imie</th>
+        <th>Imię i nazwisko</th>
         <td>{localSub.name}</td>
-        <th>Ile Osób?</th>
-        <td>{localSub.people}</td>
-        <th>Jak dlugo?</th>
+        <th>Osoby</th>
         <td>
-          <EditableField value={localSub.how_long} onRename={
-            (value) => updateSub(localSub, {"how_long": value}, () => setLocalSub((s) => ({...s, how_long: value})))}/>
+          {
+            [
+              localSub.adults ? ('Dorośli - ' + localSub.adults.length + ': ' + (localSub.adults.map(adult => getSexDisplay(adult.sex) + '/' + adult.ageRange)).join(', ')) : '',
+              localSub.children ? ('Dzieci - ' + localSub.children.length + ': ' + (localSub.children.map(child => getSexDisplay(child.sex) + '/' + child.ageRange)).join(', ')) : '',
+              localSub.people
+            ].filter(e => e).map(e => <div key={e}>{e}</div>)
+          }
         </td>
-        <th>Telefon</th>
-        <td><EditableField
-            value={localSub.phone_number}
-            onRename={(phone) => updateSub(localSub, {"phone_number": phone}, () => setLocalSub(s => ({
-              ...s,
-              phone_number: phone
-            })))}/></td>
+        <th>Jak dlugo?</th>
+        {/*todo: translation*/}
+        <td>
+          {[localSub.how_long, localSub.how_long_other].filter(l => l).join(', ')}
+        </td>
+        <th>Kontakt</th>
+        <td>{localSub.phone_number + ', ' + localSub.email}</td>
       </tr>
       <tr>
         <th>Od Kiedy?</th>
         <td>
-          {statusAsNumber(localSub.status) < 2 ?
-          <input type="date" required min={new Date().toJSON().slice(0, 10)}
-                 value={localSub.when}
-                 onChange={(e) => {
-                   const value = e.target.value;
-
-
-                   if (e && localSub.when !== value) {
-                     updateSub(localSub,
-                         {"when": value},
-                         () => setLocalSub((s) => ({...s, when: value}))
-                     );
-                   }
-                 }}/> : localSub.when}
+          <input required type="date" min={new Date().toJSON().slice(0, 10)} value={when} onChange={(e) => {
+            let newWhenDate = e.target.value;
+            updateSub(localSub, {"when": newWhenDate}, () => setWhen(newWhenDate));
+          }}/>
         </td>
         <th>Opis:</th>
         <td>{localSub.description}</td>
         <th>Języki</th>
-        <td>{localSub.languages}</td>
-        <th>Narodowość</th>
-        <td>{localSub.origin}</td>
+        <td>{localSub.languages.map(lang => lang.namePl).concat(localSub.languages_other).filter(l => l).join(", ")}</td>
+        <th>Rozważane województwa</th>
+        <td>{localSub.voivodeships ? localSub.voivodeships.map(voivodeship => voivodeship.namePl).map(e => <div key={e}>{e}</div>) : <div>Wszystkie</div>}</td>
       </tr>
       <tr>
-        <th>Ma zwierzęta</th>
-        <td>{localSub.traveling_with_pets}</td>
-        <th>Czy może spać ze zwierzętami?</th>
-        <td>{localSub.can_stay_with_pets}</td>
-        <th>Potrzebuje transportu?</th>
-        <td>{localSub.transport_needed ? "tak" : "nie"}</td>
+        <th>Dodatkowe potrzeby</th>
+        <td>{localSub.additional_needs.map(n => n.namePl).concat(localSub.additional_needs_other).filter(e => e).map(e => <div key={e}>{e}</div>)}</td>
+        <th>Alergie</th>
+        <td>{localSub.allergies.map(n => n.namePl).concat(localSub.allergies_other).filter(e => e).map(e => <div key={e}>{e}</div>)}</td>
+        <th>Osoby narażone</th>
+        <td>{localSub.groups.map(n => n.namePl).concat(localSub.groups_other).filter(e => e).map(e => <div key={e}>{e}</div>)}</td>
+        <th>Plany</th>
+        <td>{localSub.plans.map(n => n.namePl).concat(localSub.plans_other).filter(e => e).map(e => <div key={e}>{e}</div>)}</td>
+      </tr>
+      <tr>
+        <th>Obecna lokalizacja</th>
+        <td>{getCurrentPlaceDisplay(localSub.current_place)}</td>
+        <th>Pierwsze zgłoszenie?</th>
+        <td>{localSub.first_submission ? 'Tak' : 'Nie'}</td>
         <th>Notka</th>
         <td>
           <EditableField value={note} onRename={(note) => updateSub(localSub, {"note": note}, () => setNote(note))}/>
@@ -248,12 +270,10 @@ export function SubmissionRow({sub, activeHandler, user, isGroupCoordinator, isA
         <td colSpan={3}>{localSub.resource.note}</td>
       </tr>}
       <tr className={localSub.resource?"tr-host":""}>
-        <th>Osoba zgłaszająca</th>
-        <td>{localSub.receiver?.display || localSub.contact_person}</td>
         <th>{["searching", "new"].includes(localSub.status) ? "Hosta szuka" : "Host znaleziony przez"}</th>
-        <td>{localSub.matcher?.display || getActionBtn()}</td>
-        <th>Łącznik</th>
-        <td>{localSub.coordinator?.display || (localSub.matcher ? getActionBtn() : "")}</td>
+        <td>{localSub.matcher?.display || ""}</td>
+        <th>Akcja</th>
+        <td>{getActionBtn()}</td>
         <th>
           Status
         </th>
@@ -288,22 +308,6 @@ export function SubmissionRow({sub, activeHandler, user, isGroupCoordinator, isA
       </tr>}
       {isGroupAdmin && !isActive && !readOnly && <tr className="no-striping">
         <th>Akcje koordynatora</th>
-        <td colSpan={1} className={"text-center"}>
-          <Dropdown>
-            <Dropdown.Toggle variant="secondary" size={"sm"}>
-              Zmień źródło
-            </Dropdown.Toggle>
-
-            <Dropdown.Menu>
-              <Dropdown.Item disabled={localSub.source === "terrain"}
-                             onClick={() => updateSub(localSub, {source: "terrain"})}>Zachodni</Dropdown.Item>
-              <Dropdown.Item disabled={localSub.source === "webform"}
-                             onClick={() => updateSub(localSub, {source: "webform"})}>Strona</Dropdown.Item>
-              <Dropdown.Item disabled={localSub.source === "mail"}
-                             onClick={() => updateSub(localSub, {source: "mail"})}>Email</Dropdown.Item>
-            </Dropdown.Menu>
-          </Dropdown>
-        </td>
         <td colSpan={2} className={"text-center"}>
           {localSub.matcher &&
               <Button variant={"danger"} size={"sm"} onClick={freeUpMatcher}>Zwolnij zgłoszenie</Button>}

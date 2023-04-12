@@ -97,7 +97,16 @@ const STATUS_OPTIONS = [
 ];
 
 export const RESOURCE_MAP = {
-  "home": "Dom", "flat": "Mieszkanie", "room": "Pokój", "couch": "Kanapa", "mattress": "Materac"
+  "home": "Dom",
+  "flat": "Mieszkanie",
+  "room": "Pokój",
+  "couch": "Kanapa",
+  "mattress": "Materac",
+  "two_rooms": "Dwa pokoje",
+  "room_in_own_house": "Pokój w domu lub w mieszkaniu, gdzie mieszkasz",
+  "separate_part_of_apartment": "Wydzielona część domu czy lokalu, w którym przebywają inni ludzie",
+  "bed_in_shared_room": "Łóżko w pokoju współdzielonym",
+  "place_in_hotel": "Miejsce w hotelu, hostelu, pensjonacie"
 };
 
 const getResourceDisplay = (r) => {
@@ -236,38 +245,33 @@ export const ResourceRow = ({resource, isExpanded, onMatch, user, activeSub, com
       <Table bordered style={{borderColor: 'black'}}>
         <tbody>
         <tr>
-          <th>Coś o sobie</th>
-          <td>{resource.about_info}</td>
           <th>Języki</th>
           {/* FIXME: workaround to use unused languages field as call hint */}
-          <td></td>
-          <th>Kiedy można dzwonić?</th>
-          <td>{resource.when_to_call}</td>
+          <td>{resource.languages.map(lang => lang.namePl).concat(resource.languages_other).filter(l => l).join(", ")}</td>
+          <th>Od kiedy?</th>
+          <td>{resource.availability}</td>
+          <th>Na ile?</th>
+          <td>{resource.how_long}</td>
         </tr>
         <tr>
-          <th>Info o miejscu</th>
-          <td>{resource.details}</td>
-          <th>Czy są w domu zwierzęta?</th>
-          <td>{resource.living_with_pets}</td>
-          <th>Czy przyjmie zwierzęta?</th>
-          <td>{resource.can_take_person_with_pets}</td>
+          <th>Dodatkowe informacje</th>
+          <td>{[resource.details, resource.about_info].filter(l => l).join("||")}</td>
+          <th>Zwierzęta w domu</th>
+          <td>{resource.animals.map(n => n.namePl).concat(resource.animals_other).filter(e => e).map(e => <div key={e}>{e}</div>)}</td>
+          <th>Udogodnienia</th>
+          <td>
+            <ul>
+              {resource.facilities.map(n => n.namePl).concat(resource.facilities_other).filter(e => e).map(e => <li key={e}>{e}</li>)}
+            </ul>
+          </td>
         </tr>
         <tr>
           <th>Ile osób?</th>
-          <td>{resource.extra}</td>
-          <th>Transport</th>
-          <td>{resource.transport}</td>
-          <th>Koszty</th>
-          <td>{resource.costs}</td>
-        </tr>
-        <tr>
-          <th>Telefon</th>
-          <td>{resource.phone_number}</td>
-          <th>Uwagi do telefonu:</th>
-          {/* FIXME: workaround to support call hints */}
-          <td>{resource.languages}</td>
-          <th>Email</th>
-          <td>{resource.email}</td>
+          <td>{resource.extra ? resource.extra : 'Dorośli: ' + resource.adults_max_count + ' Dzieci: ' + resource.children_max_count}</td>
+          <th>Mogę zakwaterować</th>
+          <td>{resource.groups.map(n => n.namePl).concat(resource.groups_other).filter(e => e).map(e => <div key={e}>{e}</div>)}</td>
+          <th>Kontakt</th>
+          <td>{resource.phone_number + ' ' + resource.email}</td>
         </tr>
         <tr>
           <th>Notatka</th>

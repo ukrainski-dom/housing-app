@@ -24,7 +24,7 @@ from house_of_refuge.main.utils import send_mail
 # Create your views here.
 from .models import (
     HousingResource, Submission, SubStatus, Coordinator, ObjectChange, END_OF_DAY, SubSource,
-    SiteConfiguration, Status, MenuPage,
+    SiteConfiguration, Status, MenuPage, Member, Voivodeship,
 )
 from .serializers import SubmissionSerializer, HousingResourceSerializer
 
@@ -38,7 +38,7 @@ def housing_list(request):
         coords[c.group].append(c.as_json())
 
     people_helped = sum([
-        sub.people_as_int
+        sub.people_as_int()
         for sub in Submission.objects.for_happy_message()
     ])
 
@@ -173,6 +173,7 @@ def create_submission(request):
 @csrf_exempt
 @api_view(['POST', 'PUT', "DELETE"])
 def create_resource(request):
+    _patch_old_forms_properties(request.data)
     if request.method == "POST":
         serializer = HousingResourceSerializer(data=request.data)
         if serializer.is_valid():
@@ -210,19 +211,92 @@ def create_resource(request):
 @csrf_exempt
 @api_view(['POST'])
 def create_resource_integration(request, uuid):
-    resource = HousingResource(**json.loads(request.body))
+    request_body_dict = json.loads(request.body)
+    _patch_old_forms_properties(request_body_dict)
+    resource = HousingResource(**request_body_dict)
     resource.save()
     return Response(status=status.HTTP_201_CREATED)
 
 
 @csrf_exempt
 @api_view(['POST'])
+@transaction.atomic
+def create_resource_integration_v2(request):
+    json_body = json.loads(request.body)
+    resource = HousingResource(
+        name=json_body["name"],
+        phone_number=json_body["phoneNumber"],
+        email=json_body["email"],
+        voivodeship=Voivodeship.objects.get(pk=json_body["voivodeship"]),
+        zip_code=json_body["zipCode"],
+        resource=json_body["resourceType"],
+        resource_other=json_body["resourceTypeOther"],
+        availability=datetime.datetime.strptime(json_body["fromDate"], "%Y-%m-%d"),
+        how_long=json_body["period"],
+        adults_max_count=json_body["adultsMaxCount"],
+        children_max_count=json_body["childrenMaxCount"],
+        facilities_other=json_body.get("facilitiesOther"),
+        animals_other=json_body.get("animalsOther"),
+        languages_other=json_body.get("languagesOther"),
+        groups_other=json_body.get("groupsOther"),
+        details=json_body.get("additionalInfo"),
+    )
+    resource.save()
+    resource.facilities.add(*json_body.get("facilities"))
+    resource.animals.add(*json_body.get("animals"))
+    resource.languages.add(*json_body.get("languages"))
+    resource.groups.add(*json_body.get("groups"))
+    resource.save()
+    return Response({"id": resource.id}, status=status.HTTP_201_CREATED)
+
+@csrf_exempt
+@api_view(['POST'])
 def create_submission_integration(request, uuid):
-    sub = Submission(**json.loads(request.body))
+    request_body_dict = json.loads(request.body)
+    _patch_old_forms_properties(request_body_dict)
+    sub = Submission(**request_body_dict)
     super(TimeStampedModel, sub).save()
     sub.refresh_from_db()
     sub.save()
     return Response(status=status.HTTP_201_CREATED)
+
+
+@csrf_exempt
+@api_view(['POST'])
+@transaction.atomic
+def create_submission_integration_v2(request):
+    json_body = json.loads(request.body)
+    sub = Submission(
+        name=json_body["name"],
+        current_place=json_body["currentPlace"],
+        phone_number=json_body["phoneNumber"],
+        email=json_body.get("email"),
+        when=datetime.datetime.strptime(json_body["fromDate"], "%Y-%m-%d"),
+        how_long=json_body.get("needPeriod"),
+        additional_needs_other=json_body.get("additionalNeedsOther"),
+        allergies_other=json_body.get("allergiesOther"),
+        languages_other=json_body.get("languagesOther"),
+        groups_other=json_body.get("groupsOther"),
+        plans_other=json_body.get("plansOther"),
+        description=json_body.get("additionalInfo"),
+        first_submission=json_body.get("firstSubmission")
+    )
+    sub.save()
+
+    for adult in json_body.get("adults"):
+        Member.objects.create(sex=adult['sex'], age_range=adult['ageRange'], submission=sub)
+
+    for child in json_body.get("children"):
+        Member.objects.create(sex=child['sex'], age_range=child['ageRange'], submission=sub)
+
+    sub.voivodeships.add(*json_body.get("voivodeships"))
+    sub.additional_needs.add(*json_body.get("additionalNeeds"))
+    sub.allergies.add(*json_body.get("allergies"))
+    sub.languages.add(*json_body.get("languages"))
+    sub.groups.add(*json_body.get("groups"))
+    sub.plans.add(*json_body.get("plans"))
+    sub.save()
+    return Response({"id": sub.id}, status=status.HTTP_201_CREATED)
 
 
 @require_http_methods(["POST"])
@@ -318,7 +392,7 @@ def get_resources(request):
         r.as_prop()
         for r in HousingResource.objects.select_related(
             "owner"
-        ).filter(
+        ).prefetch_related("languages", "animals", "facilities", "groups").filter(
             modified__gt=updated_after
         )
     ]
@@ -336,7 +410,9 @@ def get_submissions(request):
     subs = [
         s.as_prop()
         for s in Submission.objects.select_related(
-            "matcher", "receiver", "coordinator", "resource__owner"
+            "matcher", "receiver", "coordinator", "resource__owner",
+        ).prefetch_related(
+            "languages", "additional_needs", "voivodeships", "allergies", "groups", "plans", "member_set"
         ).filter(modified__gt=updated_after)
     ]
     dropped = [hr.as_prop() for hr in HousingResource.objects.select_related("owner").filter(is_dropped=True)]
@@ -416,7 +492,7 @@ def activity_stats_view(request):
 @login_required
 def get_helped_count(request):
     people_helped = sum([
-        sub.people_as_int
+        sub.people_as_int()
         for sub in Submission.objects.for_happy_message()
     ])
     return JsonResponse({"count": people_helped})
@@ -426,3 +502,12 @@ def get_helped_count(request):
 def get_menu_pages(reqeust):
     pages = [page.as_json() for page in MenuPage.objects.filter(published=True)]
     return JsonResponse(pages, safe=False)
+
+
+def _patch_old_forms_properties(request_body_dict):
+    if "languages" in request_body_dict:
+        request_body_dict["languages_other"] = request_body_dict["languages"]
+        del request_body_dict["languages"]
+    if "how_long" in request_body_dict:
+        request_body_dict["how_long_other"] = request_body_dict["how_long"]
+        del request_body_dict["how_long"]
