@@ -173,7 +173,7 @@ def create_submission(request):
 @csrf_exempt
 @api_view(['POST', 'PUT', "DELETE"])
 def create_resource(request):
-    _path_old_languages_property(request.data)
+    _patch_old_forms_properties(request.data)
     if request.method == "POST":
         serializer = HousingResourceSerializer(data=request.data)
         if serializer.is_valid():
@@ -212,7 +212,7 @@ def create_resource(request):
 @api_view(['POST'])
 def create_resource_integration(request, uuid):
     request_body_dict = json.loads(request.body)
-    _path_old_languages_property(request_body_dict)
+    _patch_old_forms_properties(request_body_dict)
     resource = HousingResource(**request_body_dict)
     resource.save()
     return Response(status=status.HTTP_201_CREATED)
@@ -253,7 +253,7 @@ def create_resource_integration_v2(request):
 @api_view(['POST'])
 def create_submission_integration(request, uuid):
     request_body_dict = json.loads(request.body)
-    _path_old_languages_property(request_body_dict)
+    _patch_old_forms_properties(request_body_dict)
     sub = Submission(**request_body_dict)
     super(TimeStampedModel, sub).save()
     sub.refresh_from_db()
@@ -270,7 +270,7 @@ def create_submission_integration_v2(request):
         name=json_body["name"],
         current_place=json_body["currentPlace"],
         phone_number=json_body["phoneNumber"],
-        email=json_body["email"],
+        email=json_body.get("email"),
         when=datetime.datetime.strptime(json_body["fromDate"], "%Y-%m-%d"),
         how_long=json_body.get("needPeriod"),
         additional_needs_other=json_body.get("additionalNeedsOther"),
@@ -504,7 +504,10 @@ def get_menu_pages(reqeust):
     return JsonResponse(pages, safe=False)
 
 
-def _path_old_languages_property(request_body_dict):
+def _patch_old_forms_properties(request_body_dict):
     if "languages" in request_body_dict:
         request_body_dict["languages_other"] = request_body_dict["languages"]
         del request_body_dict["languages"]
+    if "how_long" in request_body_dict:
+        request_body_dict["how_long_other"] = request_body_dict["how_long"]
+        del request_body_dict["how_long"]
