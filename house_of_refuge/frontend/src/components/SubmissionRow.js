@@ -245,7 +245,7 @@ export function SubmissionRow({sub, activeHandler, user, isGroupCoordinator, isA
       </tr>
       <tr>
         <th>Obecna lokalizacja</th>
-        <td>{getCurrentPlaceDisplay(localSub.currentPlace)}</td>
+        <td>{getCurrentPlaceDisplay(localSub.current_place)}</td>
         <th>Pierwsze zgłoszenie?</th>
         <td>{localSub.first_submission ? 'Tak' : 'Nie'}</td>
         <th>Notka</th>

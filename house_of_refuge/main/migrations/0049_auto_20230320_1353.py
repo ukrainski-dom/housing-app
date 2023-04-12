@@ -11,11 +11,6 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AddField(
-            model_name='submission',
-            name='currentPlace',
-            field=models.CharField(choices=[('inPoland', 'In Poland'), ('onBorder', 'On border')], max_length=255, null=True, verbose_name='Current place'),
-        ),
         migrations.RunSQL("""INSERT INTO main_voivodeship ("name", "namePl", "nameEN") VALUES
             ('all', 'wszystkie', 'all')
         """),

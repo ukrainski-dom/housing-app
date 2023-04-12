@@ -189,4 +189,9 @@ class Migration(migrations.Migration):
             name='how_long',
             field=models.CharField(choices=[('upToWeek', 'Up to week'), ('month', 'Month'), ('twoMonthsOrMore', 'Two months or more'), ('halfYear', 'Half a year'), ('asLongAsNeeded', 'As long as needed')], help_text='For how long (in days)?', max_length=255, null=True, verbose_name='Length of stay'),
         ),
+        migrations.AddField(
+            model_name='submission',
+            name='current_place',
+            field=models.CharField(choices=[('inPoland', 'In Poland'), ('onBorder', 'On border')], max_length=255, null=True, verbose_name='Current location'),
+        ),
     ]

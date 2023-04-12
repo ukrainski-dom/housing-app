@@ -262,7 +262,7 @@ def create_submission_integration_v2(request):
     json_body = json.loads(request.body)
     sub = Submission(
         name=json_body["name"],
-        currentPlace=json_body["currentPlace"],
+        current_place=json_body["currentPlace"],
         phone_number=json_body["phoneNumber"],
         email=json_body["email"],
         when=datetime.datetime.strptime(json_body["fromDate"], "%Y-%m-%d"),

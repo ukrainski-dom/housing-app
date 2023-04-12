@@ -610,7 +610,7 @@ class Submission(TimeStampedModel):
         null=False,
         verbose_name=_("Full name"),
     )
-    currentPlace = models.CharField(
+    current_place = models.CharField(
         choices=Place.choices,
         null=True,
         max_length=255,
@@ -939,7 +939,7 @@ class Submission(TimeStampedModel):
             created=created,
             name=self.name,
             email=self.email,
-            currentPlace=self.currentPlace,
+            current_place=self.current_place,
             phone_number=get_phone_number_display(self.phone_number),
             voivodeships=[voivodeship.as_json() for voivodeship in self.voivodeships.all()],
             children=children,

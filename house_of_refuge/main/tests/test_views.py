@@ -240,7 +240,7 @@ def test_create_submission_integration_v2_endpoint(client):
     sub_from_db = Submission.objects.get(id=sub_id)
 
     assert sub_from_db.name == "Jan Kowalski"
-    assert sub_from_db.currentPlace == "inPoland"
+    assert sub_from_db.current_place == "inPoland"
     assert sub_from_db.phone_number == "+48123123123"
     assert sub_from_db.email == "test@example.com"
     assert sub_from_db.when == datetime.date(2023, 1, 1)

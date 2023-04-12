@@ -91,7 +91,7 @@ class HousingResourceFactory(DjangoModelFactory):
 
 class SubmissionFactory(DjangoModelFactory):
     name = Faker("name")
-    currentPlace = "inPoland"
+    current_place = "inPoland"
     email = Faker("email")
     phone_number = Faker("phone_number")
     people = Faker('pyint', min_value=1, max_value=20)
