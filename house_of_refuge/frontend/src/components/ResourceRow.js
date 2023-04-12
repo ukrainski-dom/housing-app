@@ -255,7 +255,7 @@ export const ResourceRow = ({resource, isExpanded, onMatch, user, activeSub, com
         </tr>
         <tr>
           <th>Dodatkowe informacje</th>
-          <td>{resource.details}</td>
+          <td>{[resource.details, resource.about_info].filter(l => l).join("||")}</td>
           <th>Zwierzęta w domu</th>
           <td>{resource.animals.map(n => n.namePl).concat(resource.animals_other).filter(e => e).map(e => <div key={e}>{e}</div>)}</td>
           <th>Udogodnienia</th>
