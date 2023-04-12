@@ -44,6 +44,7 @@ class Migration(migrations.Migration):
             ('dontKnowYet', 'jeszcze nie wiemy', 'we don''t know yet')
         """),
         migrations.RunSQL("""INSERT INTO main_voivodeship ("name", "namePl", "nameEN") VALUES
+            ('all', 'wszystkie', 'all'),
             ('dolnoslaskie', 'dolnośląskie', 'dolnośląskie'),
             ('kujawskoPomorskie', 'kujawsko-pomorskie', 'kujawsko-pomorskie'),
             ('lubelskie', 'lubelskie', 'lubelskie'),
