@@ -228,7 +228,7 @@ class HousingResource(TimeStampedModel):
         verbose_name=_("Accommodation length"),
         help_text=_("For how long can you provide the accomodation?"),
     )
-    languages = models.ManyToManyField(Language)
+    languages = models.ManyToManyField(Language, blank=True)
     languages_other = models.CharField(
         max_length=1024,
         null=True,
@@ -236,7 +236,7 @@ class HousingResource(TimeStampedModel):
         verbose_name=_("Languages"),
         help_text=_("Languages that the person speaks"),
     )
-    animals = models.ManyToManyField(Animal)
+    animals = models.ManyToManyField(Animal, blank=True)
     animals_other = models.CharField(
         max_length=512,
         null=True,
@@ -244,14 +244,14 @@ class HousingResource(TimeStampedModel):
         verbose_name=_("Other animals"),
         help_text=_("Other animals"),
     )
-    facilities = models.ManyToManyField(AdditionalNeed)
+    facilities = models.ManyToManyField(AdditionalNeed, blank=True)
     facilities_other = models.CharField(
         max_length=1024,
         null=True,
         verbose_name=_("Other facilities"),
         help_text=_("Other facilities"),
     )
-    groups = models.ManyToManyField(RefugeeGroup)
+    groups = models.ManyToManyField(RefugeeGroup, blank=True)
     groups_other = models.CharField(
         max_length=255,
         null=True,
@@ -625,7 +625,7 @@ class Submission(TimeStampedModel):
         verbose_name=_("Email"),
         null=True
     )
-    voivodeships = models.ManyToManyField(Voivodeship)
+    voivodeships = models.ManyToManyField(Voivodeship, blank=True)
     people = models.CharField(  # legacy but let's leave it for migration time
         max_length=2048,
         verbose_name=_("The number of people"),
@@ -643,14 +643,14 @@ class Submission(TimeStampedModel):
         verbose_name=_("Length of stay"),
         help_text=_("For how long?"),
     )
-    additional_needs = models.ManyToManyField(AdditionalNeed)
+    additional_needs = models.ManyToManyField(AdditionalNeed, blank=True)
     additional_needs_other = models.CharField(
         max_length=1024,
         null=True,
         verbose_name=_("Other additional needs"),
         help_text=_("Other additional needs"),
     )
-    allergies = models.ManyToManyField(Animal)
+    allergies = models.ManyToManyField(Animal, blank=True)
     allergies_other = models.CharField(
         max_length=512,
         null=True,
@@ -689,7 +689,7 @@ class Submission(TimeStampedModel):
         blank=True,
         verbose_name=_("Contact person"),
     )
-    languages = models.ManyToManyField(Language)
+    languages = models.ManyToManyField(Language, blank=True)
     languages_other = models.CharField(
         max_length=1024,
         null=True,
@@ -703,7 +703,7 @@ class Submission(TimeStampedModel):
         blank=True,
         verbose_name=_("Since when the support is needed"),
     )
-    groups = models.ManyToManyField(RefugeeGroup)
+    groups = models.ManyToManyField(RefugeeGroup, blank=True)
     groups_other = models.CharField(
         max_length=255,
         null=True,
@@ -711,7 +711,7 @@ class Submission(TimeStampedModel):
         verbose_name=_("Other groups"),
         help_text=_("Other groups"),
     )
-    plans = models.ManyToManyField(Plans)
+    plans = models.ManyToManyField(Plans, blank=True)
     # todo: add max length validation in forms app
     plans_other = models.CharField(
         max_length=255,

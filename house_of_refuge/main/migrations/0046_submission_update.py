@@ -55,7 +55,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='submission',
             name='voivodeships',
-            field=models.ManyToManyField(to='main.Voivodeship'),
+            field=models.ManyToManyField(to='main.Voivodeship', blank=True),
         ),
         migrations.CreateModel(
             name='Plans',
@@ -92,12 +92,12 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='submission',
             name='groups',
-            field=models.ManyToManyField(to='main.RefugeeGroup'),
+            field=models.ManyToManyField(to='main.RefugeeGroup', blank=True),
         ),
         migrations.AddField(
             model_name='submission',
             name='plans',
-            field=models.ManyToManyField(to='main.Plans'),
+            field=models.ManyToManyField(to='main.Plans', blank=True),
         ),
         migrations.CreateModel(
             name='AdditionalNeed',
@@ -118,7 +118,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='submission',
             name='additional_needs',
-            field=models.ManyToManyField(to='main.AdditionalNeed'),
+            field=models.ManyToManyField(to='main.AdditionalNeed', blank=True),
         ),
         migrations.CreateModel(
             name='Animal',
@@ -139,7 +139,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='submission',
             name='allergies',
-            field=models.ManyToManyField(to='main.Animal'),
+            field=models.ManyToManyField(to='main.Animal', blank=True),
         ),
         migrations.CreateModel(
             name='Language',
@@ -160,7 +160,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='submission',
             name='languages',
-            field=models.ManyToManyField(to='main.Language'),
+            field=models.ManyToManyField(to='main.Language', blank=True),
         ),
         migrations.AddField(
             model_name='submission',

@@ -173,6 +173,7 @@ def create_submission(request):
 @csrf_exempt
 @api_view(['POST', 'PUT', "DELETE"])
 def create_resource(request):
+    _path_old_languages_property(request.data)
     if request.method == "POST":
         serializer = HousingResourceSerializer(data=request.data)
         if serializer.is_valid():
@@ -210,13 +211,16 @@ def create_resource(request):
 @csrf_exempt
 @api_view(['POST'])
 def create_resource_integration(request, uuid):
-    resource = HousingResource(**json.loads(request.body))
+    request_body_dict = json.loads(request.body)
+    _path_old_languages_property(request_body_dict)
+    resource = HousingResource(**request_body_dict)
     resource.save()
     return Response(status=status.HTTP_201_CREATED)
 
 
 @csrf_exempt
 @api_view(['POST'])
+@transaction.atomic
 def create_resource_integration_v2(request):
     json_body = json.loads(request.body)
     resource = HousingResource(
@@ -494,3 +498,9 @@ def get_helped_count(request):
 def get_menu_pages(reqeust):
     pages = [page.as_json() for page in MenuPage.objects.filter(published=True)]
     return JsonResponse(pages, safe=False)
+
+
+def _path_old_languages_property(request_body_dict):
+    if "languages" in request_body_dict:
+        request_body_dict["languages_other"] = request_body_dict["languages"]
+        del request_body_dict["languages"]

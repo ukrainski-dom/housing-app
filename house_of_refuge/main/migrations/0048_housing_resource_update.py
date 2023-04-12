@@ -29,7 +29,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='housingresource',
             name='animals',
-            field=models.ManyToManyField(to='main.Animal'),
+            field=models.ManyToManyField(to='main.Animal', blank=True),
         ),
         migrations.AddField(
             model_name='housingresource',
@@ -44,7 +44,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='housingresource',
             name='facilities',
-            field=models.ManyToManyField(to='main.AdditionalNeed'),
+            field=models.ManyToManyField(to='main.AdditionalNeed', blank=True),
         ),
         migrations.AddField(
             model_name='housingresource',
@@ -54,7 +54,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='housingresource',
             name='groups',
-            field=models.ManyToManyField(to='main.RefugeeGroup'),
+            field=models.ManyToManyField(to='main.RefugeeGroup', blank=True),
         ),
         migrations.AddField(
             model_name='housingresource',
@@ -79,7 +79,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='housingresource',
             name='languages',
-            field=models.ManyToManyField(to='main.Language'),
+            field=models.ManyToManyField(to='main.Language', blank=True),
         ),
         migrations.AddField(
             model_name='housingresource',
