@@ -27,3 +27,4 @@ EMAIL_BACKEND = "django.core.mail.backends.locmem.EmailBackend"
 
 # Your stuff...
 # ------------------------------------------------------------------------------
+LANGUAGE_CODE = "en-us"
