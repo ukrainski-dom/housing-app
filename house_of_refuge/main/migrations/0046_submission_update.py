@@ -27,10 +27,6 @@ class Migration(migrations.Migration):
                 'ordering': ['name'],
             },
         ),
-        migrations.RemoveField(
-            model_name='submission',
-            name='origin',
-        ),
         migrations.RenameField(
             model_name='submission',
             old_name="how_long",

@@ -664,6 +664,12 @@ class Submission(TimeStampedModel):
         verbose_name=_("Description"),
         help_text=_("Description"),
     )
+    origin = models.CharField(  # legacy
+        max_length=512,
+        blank=True,
+        default="",
+        verbose_name=_("Nationality"),
+    )
     traveling_with_pets = models.CharField(  # legacy
         max_length=1024,
         null=True,
