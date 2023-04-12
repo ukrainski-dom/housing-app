@@ -252,7 +252,9 @@ def create_resource_integration_v2(request):
 @csrf_exempt
 @api_view(['POST'])
 def create_submission_integration(request, uuid):
-    sub = Submission(**json.loads(request.body))
+    request_body_dict = json.loads(request.body)
+    _path_old_languages_property(request_body_dict)
+    sub = Submission(**request_body_dict)
     super(TimeStampedModel, sub).save()
     sub.refresh_from_db()
     sub.save()
