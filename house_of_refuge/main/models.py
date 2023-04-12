@@ -842,7 +842,7 @@ class Submission(TimeStampedModel):
         return super(Submission, self).save(*args, **kwargs)
 
     def people_as_int(self):
-        return Member.objects.filter(submission=self).count()
+        return self.member_set.count()
 
     @property
     def accomodation_in_the_future(self):
@@ -926,7 +926,7 @@ class Submission(TimeStampedModel):
         self.save()
 
     def as_prop(self):
-        members = Member.objects.filter(submission=self)
+        members = self.member_set.all()
         adults = [adult.as_json() for adult in filter(lambda m: not m.is_child(), members)]
         children = [child.as_json() for child in filter(lambda m: m.is_child(), members)]
         try:
