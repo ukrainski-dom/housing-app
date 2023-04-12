@@ -267,7 +267,7 @@ export const ResourceRow = ({resource, isExpanded, onMatch, user, activeSub, com
         </tr>
         <tr>
           <th>Ile osób?</th>
-          <td>Dorośli: {resource.adults_max_count} Dzieci: {resource.children_max_count}</td>
+          <td>{resource.extra ? resource.extra : 'Dorośli: ' + resource.adults_max_count + ' Dzieci: ' + resource.children_max_count}</td>
           <th>Mogę zakwaterować</th>
           <td>{resource.groups.map(n => n.namePl).concat(resource.groups_other).filter(e => e).map(e => <div key={e}>{e}</div>)}</td>
           <th>Kontakt</th>

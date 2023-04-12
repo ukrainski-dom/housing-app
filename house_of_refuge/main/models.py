@@ -284,7 +284,7 @@ class HousingResource(TimeStampedModel):
         max_length=128,
         verbose_name=_("Phone number"),
     )
-    backup_phone_number = models.CharField( # legacy
+    backup_phone_number = models.CharField(  # legacy
         max_length=128,
         default="",
         blank=True,
@@ -295,7 +295,7 @@ class HousingResource(TimeStampedModel):
         unique=False,
         verbose_name=_("Email"),
     )
-    extra = models.CharField( # legacy
+    extra = models.CharField(  # legacy
         max_length=2048,
         null=True,
         default="",
