@@ -67,7 +67,7 @@ class TestUserUpdateView:
         view.form_valid(form)
 
         messages_sent = [m.message for m in messages.get_messages(request)]
-        assert messages_sent == ["Information successfully updated"]
+        assert messages_sent == ["Informacje zapisane poprawnie"]
 
 
 class TestUserRedirectView:
