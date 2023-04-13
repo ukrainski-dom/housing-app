@@ -14,6 +14,7 @@ steps:
       - 'image'
       - 'deployment.apps/mieszkania-app'
       - 'mieszkania-app=europe-central2-docker.pkg.dev/${PROJECT_ID}/apps/mieszkania-app:${SHORT_SHA}'
+      - 'run-migrations=europe-central2-docker.pkg.dev/${PROJECT_ID}/apps/mieszkania-app:${SHORT_SHA}'
     env:
       - 'CLOUDSDK_COMPUTE_REGION=europe-central2'
       - 'CLOUDSDK_CONTAINER_CLUSTER=mieszkania-app-cluster'
