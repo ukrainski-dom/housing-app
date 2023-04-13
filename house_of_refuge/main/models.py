@@ -102,6 +102,7 @@ class RefugeeGroup(models.TextChoices):
     REFUGEE_NATIONALITY_NOT_UKRAINIAN = 'refugeeNationalityNotUkrainian', _(
         'A refugee from Ukraine, with a nationality other than Ukrainian')
     LGBTKAPLUS = 'LGBTKAPlus', _('A person representing a gender or sexual minority (LGBTKA+)')
+    NONE = 'none', _('None from listed groups')
 
 
 class AdditionalNeed(models.TextChoices):
@@ -179,6 +180,7 @@ class HousingResource(TimeStampedModel):
     )
     resource = models.CharField(
         choices=HousingType.choices,
+        null=True,
         max_length=1024,
         verbose_name=_("Resource"),
     )
@@ -295,13 +297,6 @@ class HousingResource(TimeStampedModel):
         help_text=_("Other facilities"),
     )
     groups = models.JSONField(default=empty_list_factory)
-    groups_other = models.CharField(
-        max_length=255,
-        null=True,
-        blank=True,
-        verbose_name=_("Other groups"),
-        help_text=_("Other groups"),
-    )
     details = models.TextField(
         max_length=2048,
         verbose_name=_("Details"),
@@ -532,7 +527,6 @@ class HousingResource(TimeStampedModel):
             animals=[Animal(animal).label for animal in self.animals],
             animals_other=self.animals_other,
             groups=[RefugeeGroup(group).label for group in self.groups],
-            groups_other=self.groups_other,
             facilities=[AdditionalNeed(facility).label for facility in self.facilities],
             facilities_other=self.facilities_other,
             when_to_call=self.when_to_call,

@@ -20,7 +20,7 @@ class Migration(migrations.Migration):
                          ('room_in_own_house', 'Room in own house'),
                          ('separate_part_of_apartment', 'Separate part of an apartment'),
                          ('bed_in_shared_room', 'Bed in shared room'),
-                         ('place_in_hotel', 'Place in hotel, hostel or guesthouse')], max_length=1024,
+                         ('place_in_hotel', 'Place in hotel, hostel or guesthouse')], null=True, max_length=1024,
                 verbose_name='Resource'),
         ),
         migrations.AddField(
@@ -49,12 +49,6 @@ class Migration(migrations.Migration):
             name='facilities_other',
             field=models.CharField(help_text='Other facilities', max_length=1024, null=True,
                                    verbose_name='Other facilities'),
-        ),
-        migrations.AddField(
-            model_name='housingresource',
-            name='groups_other',
-            field=models.CharField(blank=True, help_text='Other groups', max_length=255, null=True,
-                                   verbose_name='Other groups'),
         ),
         migrations.RenameField(
             model_name='housingresource',

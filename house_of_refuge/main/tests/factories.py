@@ -32,7 +32,6 @@ class HousingResourceFactory(DjangoModelFactory):
     children_max_count = 3
     adults_max_count = 2
     facilities_other = "otherFacilities"
-    groups_other = "someOtherGroup"
     animals_other = "someOtherAnimal"
     languages = ["polish", "ukrainian"]
     voivodeship = "mazowieckie"

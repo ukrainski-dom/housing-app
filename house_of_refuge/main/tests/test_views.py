@@ -18,7 +18,8 @@ def test_matcher_changing(client):
 
     # now user 2 wants to clear the matcher
     client.force_login(user2)
-    response = client.post(f"/api/sub/update/{sub.id}", data={"fields": {"matcher_id": None, "status": "new"}}, content_type="application/json")
+    response = client.post(f"/api/sub/update/{sub.id}", data={"fields": {"matcher_id": None, "status": "new"}},
+                           content_type="application/json")
     assert response.status_code == 400
     sub.refresh_from_db()
     assert sub.matcher == user1
@@ -228,6 +229,63 @@ def test_create_submission_integration_v2_endpoint(client):
 
 
 @pytest.mark.django_db
+def test_create_submission_integration_v2_endpoint_minimal_data(client):
+    data = dict(
+        name="Jan Kowalski",
+        currentPlace="inPoland",
+        phoneNumber="+48123123123",
+        email="test@example.com",
+        voivodeships=[],
+        adults=[],
+        children=[],
+        fromDate="2023-01-01",
+        needPeriod="upToWeek",
+        additionalNeeds=[],
+        additionalNeedsOther=None,
+        allergies=[],
+        allergiesOther=None,
+        languages=[],
+        languagesOther=None,
+        groups=[],
+        groupsOther=None,
+        plans=[],
+        plansOther=None,
+        additionalInfo='',
+        firstSubmission=True
+    )
+
+    response = client.post("/api/submission", data=data, content_type="application/json")
+    assert response.status_code == 201
+
+    response_json = response.json()
+    sub_id = response_json["id"]
+    assert type(sub_id) == int
+
+    sub_from_db = Submission.objects.get(id=sub_id)
+
+    assert sub_from_db.name == "Jan Kowalski"
+    assert sub_from_db.current_place == "inPoland"
+    assert sub_from_db.phone_number == "+48123123123"
+    assert sub_from_db.email == "test@example.com"
+    assert sub_from_db.when == datetime.date(2023, 1, 1)
+    assert sub_from_db.how_long == "upToWeek"
+    assert sub_from_db.additional_needs_other is None
+    assert sub_from_db.allergies_other is None
+    assert sub_from_db.languages_other is None
+    assert sub_from_db.groups_other is None
+    assert sub_from_db.plans_other is None
+    assert sub_from_db.description == ''
+    assert sub_from_db.first_submission
+    assert sub_from_db.voivodeships == []
+    assert sub_from_db.additional_needs == []
+    assert sub_from_db.allergies == []
+    assert sub_from_db.languages == []
+    assert sub_from_db.groups == []
+    assert sub_from_db.plans == []
+    assert sub_from_db.members == []
+
+
+@pytest.mark.django_db
 def test_create_housing_resource_integration_v2_endpoint(client):
     data = dict(
         name="Jan Kowalski",
@@ -282,3 +340,57 @@ def test_create_housing_resource_integration_v2_endpoint(client):
     assert {*resource_from_db.languages} == {"polish", "english"}
     assert {*resource_from_db.animals} == {"cats", "dogs"}
     assert {*resource_from_db.groups} == {"elderlyPersonWithGuardian", "refugeeCitizenshipNotUkrainian"}
+
+
+@pytest.mark.django_db
+def test_create_housing_resource_integration_v2_endpoint_minimal_data(client):
+    data = dict(
+        name="Jan Kowalski",
+        phoneNumber="+48123123123",
+        email="test@example.com",
+        voivodeship="mazowieckie",
+        zipCode="03-984",
+        resourceType=None,
+        resourceTypeOther=None,
+        facilities=[],
+        facilitiesOther=None,
+        adultsMaxCount=2,
+        childrenMaxCount=4,
+        fromDate="2023-01-01",
+        period="upToWeek",
+        groups=[],
+        animals=[],
+        animalsOther=None,
+        languages=[],
+        languagesOther=None,
+        additionalInfo=''
+    )
+
+    response = client.post("/api/housing_resource", data=data, content_type="application/json")
+    assert response.status_code == 201
+
+    response_json = response.json()
+    resource_id = response_json["id"]
+    assert type(resource_id) == int
+
+    resource_from_db = HousingResource.objects.get(id=resource_id)
+
+    assert resource_from_db.name == "Jan Kowalski"
+    assert resource_from_db.phone_number == "+48123123123"
+    assert resource_from_db.email == "test@example.com"
+    assert resource_from_db.voivodeship == "mazowieckie"
+    assert resource_from_db.zip_code == "03-984"
+    assert resource_from_db.resource is None
+    assert resource_from_db.resource_other is None
+    assert resource_from_db.facilities_other is None
+    assert resource_from_db.adults_max_count == 2
+    assert resource_from_db.children_max_count == 4
+    assert resource_from_db.availability == datetime.date(2023, 1, 1)
+    assert resource_from_db.how_long == "upToWeek"
+    assert resource_from_db.animals_other is None
+    assert resource_from_db.languages_other is None
+    assert resource_from_db.details == ''
+    assert resource_from_db.facilities == []
+    assert resource_from_db.languages == []
+    assert resource_from_db.animals == []
+    assert resource_from_db.groups == []
