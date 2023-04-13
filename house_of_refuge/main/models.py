@@ -638,7 +638,7 @@ class Submission(TimeStampedModel):
     )
     voivodeships = models.ManyToManyField(Voivodeship, blank=True)
     people = models.CharField(  # legacy but let's leave it for migration time
-        max_length=2048,
+        max_length=128,
         verbose_name=_("The number of people"),
     )
     how_long = models.CharField(
@@ -649,10 +649,9 @@ class Submission(TimeStampedModel):
         help_text=_("For how long (in days)?"),
     )
     how_long_other = models.CharField(  # legacy - renamed from how_long
-        max_length=255,
-        null=True,
+        max_length=128,
         verbose_name=_("Length of stay"),
-        help_text=_("For how long?"),
+        help_text=_("For how long (in days)?"),
     )
     additional_needs = models.ManyToManyField(AdditionalNeed, blank=True)
     additional_needs_other = models.CharField(

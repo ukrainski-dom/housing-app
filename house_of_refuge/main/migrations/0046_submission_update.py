@@ -34,11 +34,6 @@ class Migration(migrations.Migration):
         ),
         migrations.AlterField(
             model_name='submission',
-            name='how_long_other',
-            field=models.CharField(help_text='For how long?', max_length=255, null=True, verbose_name='Length of stay'),
-        ),
-        migrations.AlterField(
-            model_name='submission',
             name='description',
             field=models.CharField(help_text='Description', max_length=2048, verbose_name='Description'),
         ),
@@ -46,11 +41,6 @@ class Migration(migrations.Migration):
             model_name='submission',
             name='how_long',
             field=models.CharField(choices=[('upToWeek', 'Up to week'), ('month', 'Month'), ('twoMonthsOrMore', 'Two months or more')], help_text='For how long (in days)?', max_length=255, null=True, verbose_name='Length of stay'),
-        ),
-        migrations.AlterField(
-            model_name='submission',
-            name='people',
-            field=models.CharField(max_length=2048, verbose_name='The number of people'),
         ),
         migrations.AddField(
             model_name='submission',
