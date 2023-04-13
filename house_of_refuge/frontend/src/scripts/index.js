@@ -24,7 +24,7 @@ var UPDATE_LOOP_IS_PROCESSING = false;
 const CoordinatorsHeader = ({coordinators, helped, hide}) => {
   const [peopleHelped, setPeopleHelped] = useState(helped);
   const [collapsed, setCollapsed] = useState(false);
-  const all_coordinators = (coordinators.station || []).concat(coordinators.remote || [])
+  const all_coordinators = (coordinators.station || []).concat(coordinators.remote || []);
 
   useInterval(async () => {
     const newHelped = await getHelped();

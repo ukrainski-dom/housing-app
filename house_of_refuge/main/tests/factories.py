@@ -4,7 +4,7 @@ import factory.fuzzy
 from factory import Faker
 from factory.django import DjangoModelFactory
 
-from house_of_refuge.main.models import HousingResource, HousingType, Submission, SubSource, Member
+from house_of_refuge.main.models import HousingResource, HousingType, Submission, SubSource
 
 
 class HousingResourceFactory(DjangoModelFactory):
@@ -32,60 +32,15 @@ class HousingResourceFactory(DjangoModelFactory):
     children_max_count = 3
     adults_max_count = 2
     facilities_other = "otherFacilities"
-    groups_other = "someOtherGroup"
     animals_other = "someOtherAnimal"
+    languages = ["polish", "ukrainian"]
+    voivodeship = "mazowieckie"
+    facilities = ['accessibleForWheelchairs']
+    animals = ["rodents"]
+    groups = ["elderlyPersonWithGuardian"]
 
     class Meta:
         model = HousingResource
-
-    @factory.post_generation
-    def languages(self, create, extracted, **kwargs):
-        if not create:
-            # Simple build, do nothing.
-            return
-
-        if extracted:
-            for lang in extracted:
-                self.languages.add(lang)
-
-    @factory.post_generation
-    def voivodeship(self, create, extracted, **kwargs):
-        if not create:
-            # Simple build, do nothing.
-            return
-
-        if extracted:
-            self.voivodeship_id = extracted
-
-    @factory.post_generation
-    def facilities(self, create, extracted, **kwargs):
-        if not create:
-            # Simple build, do nothing.
-            return
-
-        if extracted:
-            for facility in extracted:
-                self.facilities.add(facility)
-
-    @factory.post_generation
-    def animals(self, create, extracted, **kwargs):
-        if not create:
-            # Simple build, do nothing.
-            return
-
-        if extracted:
-            for animal in extracted:
-                self.animals.add(animal)
-
-    @factory.post_generation
-    def groups(self, create, extracted, **kwargs):
-        if not create:
-            # Simple build, do nothing.
-            return
-
-        if extracted:
-            for group in extracted:
-                self.groups.add(group)
 
 
 class SubmissionFactory(DjangoModelFactory):
@@ -108,69 +63,16 @@ class SubmissionFactory(DjangoModelFactory):
     plans_other = "someOtherPlans"
     allergies_other = "someOtherAllergy"
     first_submission = True
-
-    @factory.post_generation
-    def languages(self, create, extracted, **kwargs):
-        if not create:
-            return
-
-        if extracted:
-            for lang in extracted:
-                self.languages.add(lang)
-
-    @factory.post_generation
-    def members(self, create, extracted, **kwargs):
-        if not create:
-            return
-
-        if extracted:
-            for member in extracted:
-                Member.objects.create(sex=member['sex'], age_range=member['ageRange'], submission=self)
-
-    @factory.post_generation
-    def additional_needs(self, create, extracted, **kwargs):
-        if not create:
-            return
-
-        if extracted:
-            for need in extracted:
-                self.additional_needs.add(need)
-
-    @factory.post_generation
-    def allergies(self, create, extracted, **kwargs):
-        if not create:
-            return
-
-        if extracted:
-            for allergy in extracted:
-                self.allergies.add(allergy)
-
-    @factory.post_generation
-    def plans(self, create, extracted, **kwargs):
-        if not create:
-            return
-
-        if extracted:
-            for plan in extracted:
-                self.plans.add(plan)
-
-    @factory.post_generation
-    def groups(self, create, extracted, **kwargs):
-        if not create:
-            return
-
-        if extracted:
-            for group in extracted:
-                self.groups.add(group)
-
-    @factory.post_generation
-    def voivodeships(self, create, extracted, **kwargs):
-        if not create:
-            return
-
-        if extracted:
-            for voivodeship in extracted:
-                self.voivodeships.add(voivodeship)
+    languages = ["polish", "ukrainian"]
+    voivodeships = ["mazowieckie"]
+    members = [
+        {"ageRange": "0-5", "sex": "male"},
+        {"ageRange": "18-24", "sex": "female"}
+    ]
+    additional_needs = ['accessibleForWheelchairs', 'firstFlorOrElevator']
+    allergies = ["rodents"]
+    plans = ["rentApartmentOrRoomInPoland"]
+    groups = ["elderlyPersonWithGuardian"]
 
     class Meta:
         model = Submission

@@ -21,7 +21,24 @@ from house_of_refuge.main.utils import ago, get_phone_number_display, extract_nu
 User = get_user_model()
 
 
-class HousingType(models.TextChoices):
+class FailsafeTextChoice(models.TextChoices):
+
+    @classmethod
+    def find_label_by_value_with_fallback_to_value(cls, value):
+        try:
+            return cls(value).label
+        except ValueError:
+            return value
+
+    @classmethod
+    def find_by_value_safe(cls, value):
+        try:
+            return cls(value)
+        except ValueError:
+            return None
+
+
+class HousingType(FailsafeTextChoice):
     HOME = "home", _("House")
     FLAT = "flat", _("Apartment")
     ROOM = "room", _("Room")
@@ -34,7 +51,7 @@ class HousingType(models.TextChoices):
     PLACE_IN_HOTEL = "place_in_hotel", _("Place in hotel, hostel or guesthouse")
 
 
-class HowLong(models.TextChoices):
+class HowLong(FailsafeTextChoice):
     UP_TO_WEEK = "upToWeek", _("Up to week")
     MONTH = "month", _("Month")
     TWO_MONTHS_OR_MORE = "twoMonthsOrMore", _("Two months or more")
@@ -42,14 +59,16 @@ class HowLong(models.TextChoices):
     HALF_YEAR = "halfYear", _("Half a year")
     AS_LONG_AS_NEEDED = "asLongAsNeeded", _("As long as needed")
 
-    def to_number(self):
+    @classmethod
+    def to_number_by_value(cls, value):
+        enum_instance = cls.find_by_value_safe(value)
         return {
-            self.UP_TO_WEEK: 7,
-            self.MONTH: 30,
-            self.TWO_MONTHS_OR_MORE: 60,
-            self.HALF_YEAR: 180,
-            self.AS_LONG_AS_NEEDED: 999
-        }.get(self)
+            cls.UP_TO_WEEK: 7,
+            cls.MONTH: 30,
+            cls.TWO_MONTHS_OR_MORE: 60,
+            cls.HALF_YEAR: 180,
+            cls.AS_LONG_AS_NEEDED: 999
+        }.get(enum_instance)
 
 
 class TransportRange(models.TextChoices):
@@ -68,44 +87,75 @@ class Status(models.TextChoices):
     CONTACT_ATTEMPT = "contact_attempt", _("Próba kontaktu")
 
 
-class InternationalizedDictModel(models.Model):
-    name = models.CharField(max_length=255, unique=True, primary_key=True)
-    namePl = models.CharField(max_length=255)
-    nameEN = models.CharField(max_length=255)
-
-    class Meta:
-        abstract = True
-        ordering = ['name']
-
-    def __str__(self):
-        return self.name
-
-    def as_json(self):
-        return dict(name=self.name, namePl=self.namePl, nameEn=self.nameEN)
-
-
-class Voivodeship(InternationalizedDictModel):
-    pass
-
-
-class RefugeeGroup(InternationalizedDictModel):
-    pass
+class Voivodeship(FailsafeTextChoice):
+    ALL = 'all', _('all')
+    DOLNOSLASKIE = 'dolnoslaskie', 'dolnośląskie'
+    KUJAWSKO_POMORSKIE = 'kujawskoPomorskie', 'kujawsko-pomorskie'
+    LUBELSKIE = 'lubelskie', 'lubelskie'
+    LUBUSKIE = 'lubuskie', 'lubuskie'
+    LODZKIE = 'lodzkie', 'łódzkie'
+    MALOPOLSKIE = 'malopolskie', 'małopolskie'
+    MAZOWIECKIE = 'mazowieckie', 'mazowieckie'
+    OPOLSKIE = 'opolskie', 'opolskie'
+    PODKARPACKIE = 'podkarpackie', 'podkarpackie'
+    PODLASKIE = 'podlaskie', 'podlaskie'
+    POMORSKIE = 'pomorskie', 'pomorskie'
+    SLASKIE = 'slaskie', 'śląskie'
+    SWIETOKRZYSKIE = 'swietokrzyskie', 'świętokrzyskie'
+    WARMINSKO_MAZURSKIE = 'warminskoMazurskie', 'warmińsko-mazurskie'
+    WIELKOPOLSKIE = 'wielkopolskie', 'wielkopolskie'
+    ZACHODNIOPOMORSKIE = 'zachodniopomorskie', 'zachodniopomorskie'
 
 
-class AdditionalNeed(InternationalizedDictModel):
-    pass
+class RefugeeGroup(FailsafeTextChoice):
+    ELDERLY_PERSON_INDEPENDENT = 'elderlyPersonIndependent', _('Elderly person (independent)')
+    ELDERLY_PERSON_WITH_GUARDIAN = 'elderlyPersonWithGuardian', _(
+        'An elderly person (not independent - with a guardian)')
+    MAN = 'man', _('Man')
+    PERSON_WITH_DISABILITY_INDEPENDENT = 'personWithDisabilityIndependent', _(
+        'A person with a disability (independent)')
+    PERSON_WITH_DISABILITY_WITH_GUARDIAN = 'personWithDisabilityWithGuardian', _(
+        'A person with a disability (independent - with a guardian)')
+    REFUGEE_CITIZENSHIP_NOT_UKRAINIAN = 'refugeeCitizenshipNotUkrainian', _(
+        'A refugee from Ukraine with citizenship other than Ukrainian')
+    REFUGEE_NATIONALITY_NOT_UKRAINIAN = 'refugeeNationalityNotUkrainian', _(
+        'A refugee from Ukraine, with a nationality other than Ukrainian')
+    LGBTKAPLUS = 'LGBTKAPlus', _('A person representing a gender or sexual minority (LGBTKA+)')
+    NONE = 'none', _('None from listed groups')
 
 
-class Animal(InternationalizedDictModel):
-    pass
+class AdditionalNeed(FailsafeTextChoice):
+    FIRST_FLOR_OR_ELEVATOR = 'firstFlorOrElevator', _('Ground floor or building with an elevator')
+    ACCESSIBLE_FOR_WHEELCHAIRS = 'accessibleForWheelchairs', _('A place accessible to people in a wheelchair')
+    CHILD_BED = 'childBed', _('A bed for a child')
+    PETS_ALLOWED = 'petsAllowed', _('Possibility of accommodating a person/people with a pet')
 
 
-class Plans(InternationalizedDictModel):
-    pass
+class Animal(FailsafeTextChoice):
+    CATS = 'cats', _('Cats')
+    DOGS = 'dogs', _('Dogs')
+    RODENTS = 'rodents', _('Rodents')
 
 
-class Language(InternationalizedDictModel):
-    pass
+class Plan(FailsafeTextChoice):
+    MOVE_ABROAD = 'moveAbroad', _('move abroad')
+    RENT_APARTMENT_OR_ROOM_IN_POLAND = 'rentApartmentOrRoomInPoland', _('rent an apartment/room in Poland')
+    FIND_JOB_AND_RENT_APARTMENT_OR_ROOM_IN_POLAND = 'findJobAndRentApartmentOrRoomInPoland', _(
+        'find a job and rent an apartment/room in Poland')
+    DONT_KNOW_YET = 'dontKnowYet', _('we don''t know yet')
+
+
+class Language(FailsafeTextChoice):
+    POLISH = 'polish', _('Polish')
+    ENGLISH = 'english', _('English')
+    UKRAINIAN = 'ukrainian', _('Ukrainian')
+    RUSSIAN = 'russian', _('Russian')
+    BELARUSIAN = 'belarusian', _('Belarusian')
+
+
+def empty_list_factory():
+    return []
+
 
 class HousingResourceManager(Manager):
 
@@ -149,6 +199,7 @@ class HousingResource(TimeStampedModel):
     )
     resource = models.CharField(
         choices=HousingType.choices,
+        null=True,
         max_length=1024,
         verbose_name=_("Resource"),
     )
@@ -157,7 +208,11 @@ class HousingResource(TimeStampedModel):
         max_length=1024,
         verbose_name=_("Resource other"),
     )
-    voivodeship = models.ForeignKey('Voivodeship', null=True, on_delete=models.DO_NOTHING)
+    voivodeship = models.CharField(
+        choices=Voivodeship.choices,
+        null=True,
+        max_length=128
+    )
     city_and_zip_code = models.CharField( # legacy
         max_length=512,
         verbose_name=_("City and zip code"),
@@ -237,7 +292,7 @@ class HousingResource(TimeStampedModel):
         verbose_name=_("Accommodation length"),
         help_text=_("For how long can you provide the accomodation?"),
     )
-    languages = models.ManyToManyField(Language, blank=True)
+    languages = models.JSONField(default=empty_list_factory)
     languages_other = models.CharField(
         max_length=1024,
         null=True,
@@ -245,7 +300,7 @@ class HousingResource(TimeStampedModel):
         verbose_name=_("Languages"),
         help_text=_("Languages that the person speaks"),
     )
-    animals = models.ManyToManyField(Animal, blank=True)
+    animals = models.JSONField(default=empty_list_factory)
     animals_other = models.CharField(
         max_length=512,
         null=True,
@@ -253,21 +308,14 @@ class HousingResource(TimeStampedModel):
         verbose_name=_("Other animals"),
         help_text=_("Other animals"),
     )
-    facilities = models.ManyToManyField(AdditionalNeed, blank=True)
+    facilities = models.JSONField(default=empty_list_factory)
     facilities_other = models.CharField(
         max_length=1024,
         null=True,
         verbose_name=_("Other facilities"),
         help_text=_("Other facilities"),
     )
-    groups = models.ManyToManyField(RefugeeGroup, blank=True)
-    groups_other = models.CharField(
-        max_length=255,
-        null=True,
-        blank=True,
-        verbose_name=_("Other groups"),
-        help_text=_("Other groups"),
-    )
+    groups = models.JSONField(default=empty_list_factory)
     details = models.TextField(
         max_length=2048,
         verbose_name=_("Details"),
@@ -478,9 +526,9 @@ class HousingResource(TimeStampedModel):
             people_to_accommodate=self.people_to_accommodate + self.adults_max_count + self.children_max_count,
             costs=self.costs,
             availability=self.availability,
-            how_long=HowLong(self.how_long).label if self.how_long else extract_number_from_string(
+            how_long=HowLong.find_label_by_value_with_fallback_to_value(self.how_long) if self.how_long else extract_number_from_string(
                 self.accommodation_length, default=self.accommodation_length),
-            accommodation_length=HowLong(self.how_long).to_number() if self.how_long else extract_number_from_string(
+            accommodation_length=HowLong.to_number_by_value(self.how_long) if self.how_long else extract_number_from_string(
                 self.accommodation_length, default=self.accommodation_length),
             details=self.details,
             transport=self.transport,
@@ -493,13 +541,12 @@ class HousingResource(TimeStampedModel):
             cherry=self.cherry,
             turtle=self.turtle,
             verified=self.verified,
-            languages=[lang.as_json() for lang in self.languages.all()],
+            languages=[Language.find_label_by_value_with_fallback_to_value(lang) for lang in self.languages],
             languages_other=self.languages_other,
-            animals=[animal.as_json() for animal in self.animals.all()],
+            animals=[Animal.find_label_by_value_with_fallback_to_value(animal) for animal in self.animals],
             animals_other=self.animals_other,
-            groups=[group.as_json() for group in self.groups.all()],
-            groups_other=self.groups_other,
-            facilities=[facility.as_json() for facility in self.facilities.all()],
+            groups=[RefugeeGroup.find_label_by_value_with_fallback_to_value(group) for group in self.groups],
+            facilities=[AdditionalNeed.find_label_by_value_with_fallback_to_value(facility) for facility in self.facilities],
             facilities_other=self.facilities_other,
             when_to_call=self.when_to_call,
             living_with_pets=self.living_with_pets,
@@ -571,43 +618,43 @@ class Sex(models.TextChoices):
 
 
 class AgeRange(models.TextChoices):
-    AGE0_5 = "0-5", _("0-5")
-    AGE6_9 = "6-9", _("6-9")
-    AGE10_14 = "10-14", _("10-14")
-    AGE15_17 = "15-17", _("15-17")
-    AGE18_24 = "18-24", _("18-24")
-    AGE25_34 = "25-34", _("25-34")
-    AGE35_49 = "35-49", _("35-49")
-    AGE50_PLUS = "50+", _("50+")
+    AGE0_5 = "0-5", "0-5"
+    AGE6_9 = "6-9", "6-9"
+    AGE10_14 = "10-14", "10-14"
+    AGE15_17 = "15-17", "15-17"
+    AGE18_24 = "18-24", "18-24"
+    AGE25_34 = "25-34", "25-34"
+    AGE35_49 = "35-49", "35-49"
+    AGE50_PLUS = "50+", "50+"
 
 
-class Member(models.Model):
-    sex = models.CharField(
-        choices=Sex.choices,
-        max_length=32,
-        verbose_name=_("Sex"),
-    )
-    age_range = models.CharField(
-        choices=AgeRange.choices,
-        max_length=32,
-        verbose_name=_("Age range"),
-    )
-    submission = models.ForeignKey('Submission', on_delete=models.CASCADE)
-
-    class Meta:
-        ordering = ['age_range']
-
-    def is_child(self):
-        return self.age_range in [AgeRange.AGE0_5, AgeRange.AGE6_9, AgeRange.AGE15_17]
-
-    def __str__(self):
-        return self.age_range + ' ' + self.sex
-
-    def as_json(self):
-        return {
-            "sex": self.sex,
-            "ageRange": self.age_range
-        }
+# class Member(models.Model):
+#     sex = models.CharField(
+#         choices=Sex.choices,
+#         max_length=32,
+#         verbose_name=_("Sex"),
+#     )
+#     age_range = models.CharField(
+#         choices=AgeRange.choices,
+#         max_length=32,
+#         verbose_name=_("Age range"),
+#     )
+#     submission = models.ForeignKey('Submission', on_delete=models.CASCADE)
+#
+#     class Meta:
+#         ordering = ['age_range']
+#
+#     def is_child(self):
+#         return self.age_range in [AgeRange.AGE0_5, AgeRange.AGE6_9, AgeRange.AGE15_17]
+#
+#     def __str__(self):
+#         return self.age_range + ' ' + self.sex
+#
+#     def as_json(self):
+#         return {
+#             "sex": self.sex,
+#             "ageRange": self.age_range
+#         }
 
 
 class Place(models.TextChoices):
@@ -636,7 +683,8 @@ class Submission(TimeStampedModel):
         verbose_name=_("Email"),
         null=True
     )
-    voivodeships = models.ManyToManyField(Voivodeship, blank=True)
+    voivodeships = models.JSONField(default=empty_list_factory)
+    members = models.JSONField(default=empty_list_factory)
     people = models.CharField(  # legacy but let's leave it for migration time
         max_length=128,
         verbose_name=_("The number of people"),
@@ -653,14 +701,14 @@ class Submission(TimeStampedModel):
         verbose_name=_("Length of stay"),
         help_text=_("For how long (in days)?"),
     )
-    additional_needs = models.ManyToManyField(AdditionalNeed, blank=True)
+    additional_needs = models.JSONField(default=empty_list_factory)
     additional_needs_other = models.CharField(
         max_length=1024,
         null=True,
         verbose_name=_("Other additional needs"),
         help_text=_("Other additional needs"),
     )
-    allergies = models.ManyToManyField(Animal, blank=True)
+    allergies = models.JSONField(default=empty_list_factory)
     allergies_other = models.CharField(
         max_length=512,
         null=True,
@@ -699,7 +747,7 @@ class Submission(TimeStampedModel):
         blank=True,
         verbose_name=_("Contact person"),
     )
-    languages = models.ManyToManyField(Language, blank=True)
+    languages = models.JSONField(default=empty_list_factory)
     languages_other = models.CharField(
         max_length=1024,
         null=True,
@@ -713,7 +761,7 @@ class Submission(TimeStampedModel):
         blank=True,
         verbose_name=_("Since when the support is needed"),
     )
-    groups = models.ManyToManyField(RefugeeGroup, blank=True)
+    groups = models.JSONField(default=empty_list_factory)
     groups_other = models.CharField(
         max_length=255,
         null=True,
@@ -721,7 +769,7 @@ class Submission(TimeStampedModel):
         verbose_name=_("Other groups"),
         help_text=_("Other groups"),
     )
-    plans = models.ManyToManyField(Plans, blank=True)
+    plans = models.JSONField(default=empty_list_factory)
     # todo: add max length validation in forms app
     plans_other = models.CharField(
         max_length=255,
@@ -852,7 +900,7 @@ class Submission(TimeStampedModel):
         return super(Submission, self).save(*args, **kwargs)
 
     def people_as_int(self):
-        return self.member_set.count()
+        return len(self.members)
 
     @property
     def accomodation_in_the_future(self):
@@ -936,9 +984,11 @@ class Submission(TimeStampedModel):
         self.save()
 
     def as_prop(self):
-        members = self.member_set.all()
-        adults = [adult.as_json() for adult in filter(lambda m: not m.is_child(), members)]
-        children = [child.as_json() for child in filter(lambda m: m.is_child(), members)]
+        def is_child(member):
+            return member['ageRange'] in [AgeRange.AGE0_5, AgeRange.AGE6_9, AgeRange.AGE15_17]
+
+        adults = [adult for adult in filter(lambda m: not is_child(m), self.members)]
+        children = [child for child in filter(lambda m: is_child(m), self.members)]
         try:
             created = self.created.astimezone(timezone.get_default_timezone()).strftime("%-d %B %H:%M:%S")
         except ValueError:
@@ -951,23 +1001,25 @@ class Submission(TimeStampedModel):
             email=self.email,
             current_place=self.current_place,
             phone_number=get_phone_number_display(self.phone_number),
-            voivodeships=[voivodeship.as_json() for voivodeship in self.voivodeships.all()],
+            voivodeships=[Voivodeship.find_label_by_value_with_fallback_to_value(voivodeship) for voivodeship in
+                          self.voivodeships],
             children=children,
             adults=adults,
             people=self.people,
             people_count=str(self.people_as_int()),
-            additional_needs=[need.as_json() for need in self.additional_needs.all()],
+            additional_needs=[AdditionalNeed.find_label_by_value_with_fallback_to_value(need) for need in
+                              self.additional_needs],
             additional_needs_other=self.additional_needs_other,
             description=self.description,
             how_long=HowLong(self.how_long).label,
             how_long_other=self.how_long_other,
-            languages=[lang.as_json() for lang in self.languages.all()],
+            languages=[Language.find_label_by_value_with_fallback_to_value(lang) for lang in self.languages],
             languages_other=self.languages_other,
-            allergies=[allergy.as_json() for allergy in self.allergies.all()],
+            allergies=[Animal.find_label_by_value_with_fallback_to_value(allergy) for allergy in self.allergies],
             allergies_other=self.allergies_other,
-            groups=[group.as_json() for group in self.groups.all()],
+            groups=[RefugeeGroup.find_label_by_value_with_fallback_to_value(group) for group in self.groups],
             groups_other=self.groups_other,
-            plans=[plan.as_json() for plan in self.plans.all()],
+            plans=[Plan.find_label_by_value_with_fallback_to_value(plan) for plan in self.plans],
             plans_other=self.plans_other,
             source=self.source,
             priority=self.priority,
