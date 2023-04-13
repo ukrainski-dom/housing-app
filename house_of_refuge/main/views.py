@@ -24,7 +24,7 @@ from house_of_refuge.main.utils import send_mail
 # Create your views here.
 from .models import (
     HousingResource, Submission, SubStatus, Coordinator, ObjectChange, END_OF_DAY, SubSource,
-    SiteConfiguration, Status, MenuPage, Member, Voivodeship,
+    SiteConfiguration, Status, MenuPage, Voivodeship,
 )
 from .serializers import SubmissionSerializer, HousingResourceSerializer
 
@@ -227,7 +227,7 @@ def create_resource_integration_v2(request):
         name=json_body["name"],
         phone_number=json_body["phoneNumber"],
         email=json_body["email"],
-        voivodeship=Voivodeship.objects.get(pk=json_body["voivodeship"]),
+        voivodeship=json_body["voivodeship"],
         zip_code=json_body["zipCode"],
         resource=json_body["resourceType"],
         resource_other=json_body["resourceTypeOther"],
@@ -240,12 +240,11 @@ def create_resource_integration_v2(request):
         languages_other=json_body.get("languagesOther"),
         groups_other=json_body.get("groupsOther"),
         details=json_body.get("additionalInfo"),
+        facilities=json_body.get("facilities"),
+        animals=json_body.get("animals"),
+        languages=json_body.get("languages"),
+        groups=json_body.get("groups"),
     )
-    resource.save()
-    resource.facilities.add(*json_body.get("facilities"))
-    resource.animals.add(*json_body.get("animals"))
-    resource.languages.add(*json_body.get("languages"))
-    resource.groups.add(*json_body.get("groups"))
     resource.save()
     return Response({"id": resource.id}, status=status.HTTP_201_CREATED)
 
@@ -279,22 +278,15 @@ def create_submission_integration_v2(request):
         groups_other=json_body.get("groupsOther"),
         plans_other=json_body.get("plansOther"),
         description=json_body.get("additionalInfo"),
-        first_submission=json_body.get("firstSubmission")
+        first_submission=json_body.get("firstSubmission"),
+        voivodeships=json_body.get("voivodeships"),
+        additional_needs=json_body.get("additionalNeeds"),
+        allergies=json_body.get("allergies"),
+        languages=json_body.get("languages"),
+        groups=json_body.get("groups"),
+        plans=json_body.get("plans"),
+        members=[*json_body.get("adults"), *json_body.get("children")]
     )
-    sub.save()
-
-    for adult in json_body.get("adults"):
-        Member.objects.create(sex=adult['sex'], age_range=adult['ageRange'], submission=sub)
-
-    for child in json_body.get("children"):
-        Member.objects.create(sex=child['sex'], age_range=child['ageRange'], submission=sub)
-
-    sub.voivodeships.add(*json_body.get("voivodeships"))
-    sub.additional_needs.add(*json_body.get("additionalNeeds"))
-    sub.allergies.add(*json_body.get("allergies"))
-    sub.languages.add(*json_body.get("languages"))
-    sub.groups.add(*json_body.get("groups"))
-    sub.plans.add(*json_body.get("plans"))
     sub.save()
     return Response({"id": sub.id}, status=status.HTTP_201_CREATED)
 
@@ -392,7 +384,7 @@ def get_resources(request):
         r.as_prop()
         for r in HousingResource.objects.select_related(
             "owner"
-        ).prefetch_related("languages", "animals", "facilities", "groups").filter(
+        ).filter(
             modified__gt=updated_after
         )
     ]
@@ -411,8 +403,6 @@ def get_submissions(request):
         s.as_prop()
         for s in Submission.objects.select_related(
             "matcher", "receiver", "coordinator", "resource__owner",
-        ).prefetch_related(
-            "languages", "additional_needs", "voivodeships", "allergies", "groups", "plans", "member_set"
         ).filter(modified__gt=updated_after)
     ]
     dropped = [hr.as_prop() for hr in HousingResource.objects.select_related("owner").filter(is_dropped=True)]

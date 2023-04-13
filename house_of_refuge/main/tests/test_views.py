@@ -2,7 +2,7 @@ import datetime
 
 import pytest
 
-from house_of_refuge.main.models import SubStatus, Coordinator, HousingResource, Submission, ObjectChange, Member
+from house_of_refuge.main.models import SubStatus, Coordinator, HousingResource, Submission, ObjectChange
 from house_of_refuge.main.tests.factories import SubmissionFactory, HousingResourceFactory
 from house_of_refuge.users.tests.factories import UserFactory
 
@@ -36,7 +36,6 @@ def test_matcher_changing(client):
 
 @pytest.mark.django_db
 def test_db_queries_on_sub_getting(client, user, django_assert_num_queries):
-    # todo: ensure that queries count doesn't grow when there is more connected submissions
     client.force_login(user)
     user2 = UserFactory()
     for _ in range(40):
@@ -46,7 +45,6 @@ def test_db_queries_on_sub_getting(client, user, django_assert_num_queries):
     r = HousingResource.objects.first()
     r.owner = user2
     r.save()
-
 
     dropped = HousingResource.objects.last()
     dropped.is_dropped = True
@@ -60,7 +58,7 @@ def test_db_queries_on_sub_getting(client, user, django_assert_num_queries):
     sub.save()
     ObjectChange.objects.create(host=r, submission=sub, user=user2, change="test")
 
-    with django_assert_num_queries(15):
+    with django_assert_num_queries(4):
         response = client.get("/api/zgloszenia")
         assert len(response.json()['data']['submissions']) == 40
         assert response.status_code == 200
@@ -69,7 +67,7 @@ def test_db_queries_on_sub_getting(client, user, django_assert_num_queries):
         SubmissionFactory()
         HousingResourceFactory()
 
-    with django_assert_num_queries(15):
+    with django_assert_num_queries(4):
         response = client.get("/api/zgloszenia")
         assert len(response.json()['data']['submissions']) == 80
         assert response.status_code == 200
@@ -97,7 +95,7 @@ def test_db_queries_on_resource_getting(client, user, django_assert_num_queries)
     sub.matcher = user
     sub.save()
 
-    with django_assert_num_queries(7):
+    with django_assert_num_queries(3):
         response = client.get("/api/zasoby")
         assert response.status_code == 200
 
@@ -216,19 +214,17 @@ def test_create_submission_integration_v2_endpoint(client):
     assert sub_from_db.description == "someAdditionalInfo"
     assert sub_from_db.first_submission
 
-    assert {voivodeship.name for voivodeship in sub_from_db.voivodeships.all()} == {"mazowieckie"}
-    assert {need.name for need in sub_from_db.additional_needs.all()} == {"firstFlorOrElevator",
-                                                                         "accessibleForWheelchairs"}
-    assert {allergy.name for allergy in sub_from_db.allergies.all()} == {"cats", "dogs"}
-    assert {language.name for language in sub_from_db.languages.all()} == {"polish", "english"}
-    assert {group.name for group in sub_from_db.groups.all()} == {"elderlyPersonWithGuardian",
-                                                                  "refugeeCitizenshipNotUkrainian"}
-    assert {plans.name for plans in sub_from_db.plans.all()} == {"findJobAndRentApartmentOrRoomInPoland"}
+    assert {*sub_from_db.voivodeships} == {"mazowieckie"}
+    assert {*sub_from_db.additional_needs} == {"firstFlorOrElevator", "accessibleForWheelchairs"}
+    assert {*sub_from_db.allergies} == {"cats", "dogs"}
+    assert {*sub_from_db.languages} == {"polish", "english"}
+    assert {*sub_from_db.groups} == {"elderlyPersonWithGuardian", "refugeeCitizenshipNotUkrainian"}
+    assert {*sub_from_db.plans} == {"findJobAndRentApartmentOrRoomInPoland"}
 
-    members = Member.objects.filter(submission__pk=sub_id).order_by('age_range')
-    assert len(members) == 2
-    assert [member.sex for member in members] == ['female', 'male']
-    assert [member.age_range for member in members] == ['0-5', '18-24']
+    assert len(sub_from_db.members) == 2
+    members = sorted(sub_from_db.members, key=lambda m: m['ageRange'])
+    assert [member['sex'] for member in members] == ['female', 'male']
+    assert [member['ageRange'] for member in members] == ['0-5', '18-24']
 
 
 @pytest.mark.django_db
@@ -270,7 +266,7 @@ def test_create_housing_resource_integration_v2_endpoint(client):
     assert resource_from_db.name == "Jan Kowalski"
     assert resource_from_db.phone_number == "+48123123123"
     assert resource_from_db.email == "test@example.com"
-    assert resource_from_db.voivodeship.name == "mazowieckie"
+    assert resource_from_db.voivodeship == "mazowieckie"
     assert resource_from_db.zip_code == "03-984"
     assert resource_from_db.resource == "separate_part_of_apartment"
     assert resource_from_db.resource_other == "otherResourceType"
@@ -282,10 +278,7 @@ def test_create_housing_resource_integration_v2_endpoint(client):
     assert resource_from_db.animals_other == "someOtherAnimal"
     assert resource_from_db.languages_other == "someOtherLang"
     assert resource_from_db.details == "someAdditionalInfo"
-
-    assert {facility.name for facility in resource_from_db.facilities.all()} == {"firstFlorOrElevator",
-                                                                                 "accessibleForWheelchairs"}
-    assert {language.name for language in resource_from_db.languages.all()} == {"polish", "english"}
-    assert {animal.name for animal in resource_from_db.animals.all()} == {"cats", "dogs"}
-    assert {group.name for group in resource_from_db.groups.all()} == {"elderlyPersonWithGuardian",
-                                                                       "refugeeCitizenshipNotUkrainian"}
+    assert {*resource_from_db.facilities} == {"firstFlorOrElevator", "accessibleForWheelchairs"}
+    assert {*resource_from_db.languages} == {"polish", "english"}
+    assert {*resource_from_db.animals} == {"cats", "dogs"}
+    assert {*resource_from_db.groups} == {"elderlyPersonWithGuardian", "refugeeCitizenshipNotUkrainian"}

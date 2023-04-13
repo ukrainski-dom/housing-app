@@ -195,7 +195,7 @@ export function SubmissionRow({sub, activeHandler, user, isGroupCoordinator, isA
         Zwiń / Rozwiń
       </div>
     </div>
-    <Table className="sub-table" style={{'background-color': 'rgba(255, 255, 255, 0.95)', display: collapsed ? 'none' : 'table'}}>
+    <Table className="sub-table" style={{'backgroundColor': 'rgba(255, 255, 255, 0.95)', display: collapsed ? 'none' : 'table'}}>
       <tbody>
       <tr>
         <th>Imię i nazwisko</th>
@@ -229,19 +229,19 @@ export function SubmissionRow({sub, activeHandler, user, isGroupCoordinator, isA
         <th>Opis:</th>
         <td>{localSub.description}</td>
         <th>Języki</th>
-        <td>{localSub.languages.map(lang => lang.namePl).concat(localSub.languages_other).filter(l => l).join(", ")}</td>
+        <td>{localSub.languages.concat(localSub.languages_other).filter(l => l).join(", ")}</td>
         <th>Rozważane województwa</th>
-        <td>{localSub.voivodeships ? localSub.voivodeships.map(voivodeship => voivodeship.namePl).map(e => <div key={e}>{e}</div>) : <div>Wszystkie</div>}</td>
+        <td>{localSub.voivodeships ? localSub.voivodeships.map(e => <div key={e}>{e}</div>) : <div>Wszystkie</div>}</td>
       </tr>
       <tr>
         <th>Dodatkowe potrzeby</th>
-        <td>{localSub.additional_needs.map(n => n.namePl).concat(localSub.additional_needs_other).filter(e => e).map(e => <div key={e}>{e}</div>)}</td>
+        <td>{localSub.additional_needs.concat(localSub.additional_needs_other).filter(e => e).map(e => <div key={e}>{e}</div>)}</td>
         <th>Alergie</th>
-        <td>{localSub.allergies.map(n => n.namePl).concat(localSub.allergies_other).filter(e => e).map(e => <div key={e}>{e}</div>)}</td>
+        <td>{localSub.allergies.concat(localSub.allergies_other).filter(e => e).map(e => <div key={e}>{e}</div>)}</td>
         <th>Osoby narażone</th>
-        <td>{localSub.groups.map(n => n.namePl).concat(localSub.groups_other).filter(e => e).map(e => <div key={e}>{e}</div>)}</td>
+        <td>{localSub.groups.concat(localSub.groups_other).filter(e => e).map(e => <div key={e}>{e}</div>)}</td>
         <th>Plany</th>
-        <td>{localSub.plans.map(n => n.namePl).concat(localSub.plans_other).filter(e => e).map(e => <div key={e}>{e}</div>)}</td>
+        <td>{localSub.plans.concat(localSub.plans_other).filter(e => e).map(e => <div key={e}>{e}</div>)}</td>
       </tr>
       <tr>
         <th>Obecna lokalizacja</th>
