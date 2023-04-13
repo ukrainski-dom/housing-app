@@ -21,7 +21,24 @@ from house_of_refuge.main.utils import ago, get_phone_number_display, extract_nu
 User = get_user_model()
 
 
-class HousingType(models.TextChoices):
+class FailsafeTextChoice(models.TextChoices):
+
+    @classmethod
+    def find_label_by_value_with_fallback_to_value(cls, value):
+        try:
+            return cls(value).label
+        except ValueError:
+            return value
+
+    @classmethod
+    def find_by_value_safe(cls, value):
+        try:
+            return cls(value)
+        except ValueError:
+            return None
+
+
+class HousingType(FailsafeTextChoice):
     HOME = "home", _("House")
     FLAT = "flat", _("Apartment")
     ROOM = "room", _("Room")
@@ -34,7 +51,7 @@ class HousingType(models.TextChoices):
     PLACE_IN_HOTEL = "place_in_hotel", _("Place in hotel, hostel or guesthouse")
 
 
-class HowLong(models.TextChoices):
+class HowLong(FailsafeTextChoice):
     UP_TO_WEEK = "upToWeek", _("Up to week")
     MONTH = "month", _("Month")
     TWO_MONTHS_OR_MORE = "twoMonthsOrMore", _("Two months or more")
@@ -42,14 +59,16 @@ class HowLong(models.TextChoices):
     HALF_YEAR = "halfYear", _("Half a year")
     AS_LONG_AS_NEEDED = "asLongAsNeeded", _("As long as needed")
 
-    def to_number(self):
+    @classmethod
+    def to_number_by_value(cls, value):
+        enum_instance = cls.find_by_value_safe(value)
         return {
-            self.UP_TO_WEEK: 7,
-            self.MONTH: 30,
-            self.TWO_MONTHS_OR_MORE: 60,
-            self.HALF_YEAR: 180,
-            self.AS_LONG_AS_NEEDED: 999
-        }.get(self)
+            cls.UP_TO_WEEK: 7,
+            cls.MONTH: 30,
+            cls.TWO_MONTHS_OR_MORE: 60,
+            cls.HALF_YEAR: 180,
+            cls.AS_LONG_AS_NEEDED: 999
+        }.get(enum_instance)
 
 
 class TransportRange(models.TextChoices):
@@ -68,7 +87,7 @@ class Status(models.TextChoices):
     CONTACT_ATTEMPT = "contact_attempt", _("Próba kontaktu")
 
 
-class Voivodeship(models.TextChoices):
+class Voivodeship(FailsafeTextChoice):
     ALL = 'all', _('all')
     DOLNOSLASKIE = 'dolnoslaskie', 'dolnośląskie'
     KUJAWSKO_POMORSKIE = 'kujawskoPomorskie', 'kujawsko-pomorskie'
@@ -88,7 +107,7 @@ class Voivodeship(models.TextChoices):
     ZACHODNIOPOMORSKIE = 'zachodniopomorskie', 'zachodniopomorskie'
 
 
-class RefugeeGroup(models.TextChoices):
+class RefugeeGroup(FailsafeTextChoice):
     ELDERLY_PERSON_INDEPENDENT = 'elderlyPersonIndependent', _('Elderly person (independent)')
     ELDERLY_PERSON_WITH_GUARDIAN = 'elderlyPersonWithGuardian', _(
         'An elderly person (not independent - with a guardian)')
@@ -105,20 +124,20 @@ class RefugeeGroup(models.TextChoices):
     NONE = 'none', _('None from listed groups')
 
 
-class AdditionalNeed(models.TextChoices):
+class AdditionalNeed(FailsafeTextChoice):
     FIRST_FLOR_OR_ELEVATOR = 'firstFlorOrElevator', _('Ground floor or building with an elevator')
     ACCESSIBLE_FOR_WHEELCHAIRS = 'accessibleForWheelchairs', _('A place accessible to people in a wheelchair')
     CHILD_BED = 'childBed', _('A bed for a child')
     PETS_ALLOWED = 'petsAllowed', _('Possibility of accommodating a person/people with a pet')
 
 
-class Animal(models.TextChoices):
+class Animal(FailsafeTextChoice):
     CATS = 'cats', _('Cats')
     DOGS = 'dogs', _('Dogs')
     RODENTS = 'rodents', _('Rodents')
 
 
-class Plan(models.TextChoices):
+class Plan(FailsafeTextChoice):
     MOVE_ABROAD = 'moveAbroad', _('move abroad')
     RENT_APARTMENT_OR_ROOM_IN_POLAND = 'rentApartmentOrRoomInPoland', _('rent an apartment/room in Poland')
     FIND_JOB_AND_RENT_APARTMENT_OR_ROOM_IN_POLAND = 'findJobAndRentApartmentOrRoomInPoland', _(
@@ -126,7 +145,7 @@ class Plan(models.TextChoices):
     DONT_KNOW_YET = 'dontKnowYet', _('we don''t know yet')
 
 
-class Language(models.TextChoices):
+class Language(FailsafeTextChoice):
     POLISH = 'polish', _('Polish')
     ENGLISH = 'english', _('English')
     UKRAINIAN = 'ukrainian', _('Ukrainian')
@@ -507,9 +526,9 @@ class HousingResource(TimeStampedModel):
             people_to_accommodate=self.people_to_accommodate + self.adults_max_count + self.children_max_count,
             costs=self.costs,
             availability=self.availability,
-            how_long=HowLong(self.how_long).label if self.how_long else extract_number_from_string(
+            how_long=HowLong.find_label_by_value_with_fallback_to_value(self.how_long) if self.how_long else extract_number_from_string(
                 self.accommodation_length, default=self.accommodation_length),
-            accommodation_length=HowLong(self.how_long).to_number() if self.how_long else extract_number_from_string(
+            accommodation_length=HowLong.to_number_by_value(self.how_long) if self.how_long else extract_number_from_string(
                 self.accommodation_length, default=self.accommodation_length),
             details=self.details,
             transport=self.transport,
@@ -522,12 +541,12 @@ class HousingResource(TimeStampedModel):
             cherry=self.cherry,
             turtle=self.turtle,
             verified=self.verified,
-            languages=[Language(lang).label for lang in self.languages],
+            languages=[Language.find_label_by_value_with_fallback_to_value(lang) for lang in self.languages],
             languages_other=self.languages_other,
-            animals=[Animal(animal).label for animal in self.animals],
+            animals=[Animal.find_label_by_value_with_fallback_to_value(animal) for animal in self.animals],
             animals_other=self.animals_other,
-            groups=[RefugeeGroup(group).label for group in self.groups],
-            facilities=[AdditionalNeed(facility).label for facility in self.facilities],
+            groups=[RefugeeGroup.find_label_by_value_with_fallback_to_value(group) for group in self.groups],
+            facilities=[AdditionalNeed.find_label_by_value_with_fallback_to_value(facility) for facility in self.facilities],
             facilities_other=self.facilities_other,
             when_to_call=self.when_to_call,
             living_with_pets=self.living_with_pets,
@@ -982,23 +1001,25 @@ class Submission(TimeStampedModel):
             email=self.email,
             current_place=self.current_place,
             phone_number=get_phone_number_display(self.phone_number),
-            voivodeships=[Voivodeship(voivodeship).label for voivodeship in self.voivodeships],
+            voivodeships=[Voivodeship.find_label_by_value_with_fallback_to_value(voivodeship) for voivodeship in
+                          self.voivodeships],
             children=children,
             adults=adults,
             people=self.people,
             people_count=str(self.people_as_int()),
-            additional_needs=[AdditionalNeed(need).label for need in self.additional_needs],
+            additional_needs=[AdditionalNeed.find_label_by_value_with_fallback_to_value(need) for need in
+                              self.additional_needs],
             additional_needs_other=self.additional_needs_other,
             description=self.description,
             how_long=HowLong(self.how_long).label,
             how_long_other=self.how_long_other,
-            languages=[Language(lang).label for lang in self.languages],
+            languages=[Language.find_label_by_value_with_fallback_to_value(lang) for lang in self.languages],
             languages_other=self.languages_other,
-            allergies=[Animal(allergy).label for allergy in self.allergies],
+            allergies=[Animal.find_label_by_value_with_fallback_to_value(allergy) for allergy in self.allergies],
             allergies_other=self.allergies_other,
-            groups=[RefugeeGroup(group).label for group in self.groups],
+            groups=[RefugeeGroup.find_label_by_value_with_fallback_to_value(group) for group in self.groups],
             groups_other=self.groups_other,
-            plans=[Plan(plan).label for plan in self.plans],
+            plans=[Plan.find_label_by_value_with_fallback_to_value(plan) for plan in self.plans],
             plans_other=self.plans_other,
             source=self.source,
             priority=self.priority,
