@@ -48,7 +48,7 @@ class SubmissionFactory(DjangoModelFactory):
     current_place = "inPoland"
     email = Faker("email")
     phone_number = Faker("phone_number")
-    people = Faker('pyint', min_value=1, max_value=20)
+    people = ''
     how_long = "upToWeek"
     how_long_other = "3 dni (legacy)"
     description = Faker("sentence")

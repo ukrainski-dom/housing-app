@@ -202,11 +202,9 @@ export function SubmissionRow({sub, activeHandler, user, isGroupCoordinator, isA
         <td>{localSub.name}</td>
         <th>Osoby</th>
         <td>
-          {
-            [
+          { localSub.people ? localSub.people : [
               localSub.adults ? ('Dorośli - ' + localSub.adults.length + ': ' + (localSub.adults.map(adult => getSexDisplay(adult.sex) + '/' + adult.ageRange)).join(', ')) : '',
-              localSub.children ? ('Dzieci - ' + localSub.children.length + ': ' + (localSub.children.map(child => getSexDisplay(child.sex) + '/' + child.ageRange)).join(', ')) : '',
-              localSub.people
+              localSub.children ? ('Dzieci - ' + localSub.children.length + ': ' + (localSub.children.map(child => getSexDisplay(child.sex) + '/' + child.ageRange)).join(', ')) : ''
             ].filter(e => e).map(e => <div key={e}>{e}</div>)
           }
         </td>
