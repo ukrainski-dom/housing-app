@@ -523,7 +523,7 @@ class HousingResource(TimeStampedModel):
             full_address=self.full_address,
             adults_max_count=self.adults_max_count,
             children_max_count=self.children_max_count,
-            people_to_accommodate=self.people_to_accommodate + self.adults_max_count + self.children_max_count,
+            people_to_accommodate=self.people_to_accommodate + (self.adults_max_count or 0) + (self.children_max_count or 0),
             costs=self.costs,
             availability=self.availability,
             how_long=HowLong.find_label_by_value_with_fallback_to_value(self.how_long) if self.how_long else extract_number_from_string(
