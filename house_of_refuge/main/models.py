@@ -1011,7 +1011,7 @@ class Submission(TimeStampedModel):
                               self.additional_needs],
             additional_needs_other=self.additional_needs_other,
             description=self.description,
-            how_long=HowLong(self.how_long).label,
+            how_long=HowLong.find_label_by_value_with_fallback_to_value(self.how_long) if self.how_long else None,
             how_long_other=self.how_long_other,
             languages=[Language.find_label_by_value_with_fallback_to_value(lang) for lang in self.languages],
             languages_other=self.languages_other,
