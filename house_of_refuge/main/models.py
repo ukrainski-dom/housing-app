@@ -200,38 +200,46 @@ class HousingResource(TimeStampedModel):
     resource = models.CharField(
         choices=HousingType.choices,
         null=True,
+        blank=True,
         max_length=1024,
         verbose_name=_("Resource"),
     )
     resource_other = models.CharField(
         null=True,
+        blank=True,
         max_length=1024,
         verbose_name=_("Resource other"),
     )
     voivodeship = models.CharField(
         choices=Voivodeship.choices,
+        blank=True,
         null=True,
         max_length=128
     )
     city_and_zip_code = models.CharField( # legacy
         max_length=512,
+        blank=True,
         verbose_name=_("City and zip code"),
     )
     zip_code = models.CharField(
         max_length=8,
+        blank=True,
         verbose_name=_("Zip code"),
     )
     address = models.CharField(  # legacy
         max_length=512,
+        blank=True,
         verbose_name=_("Address"),
         help_text=_("street, building number, appartment number"),
     )
     adults_max_count = models.IntegerField(
         null=True,
+        blank=True,
         verbose_name=_("Adults to accommodate"),
     )
     children_max_count = models.IntegerField(
         null=True,
+        blank=True,
         verbose_name=_("Children to accommodate"),
     )
     people_to_accommodate_raw = models.CharField(  # legacy
@@ -272,6 +280,7 @@ class HousingResource(TimeStampedModel):
     )
     costs = models.CharField(  # legacy
         max_length=1024,
+        blank=True,
         verbose_name=_("Costs"),
         help_text=_("Costs of stay - rent, fees, rental costs or free stay"),
     )
@@ -283,16 +292,18 @@ class HousingResource(TimeStampedModel):
     how_long = models.CharField(
         choices=HowLong.choices,
         null=True,
+        blank=True,
         max_length=255,
         verbose_name=_("Length of stay"),
         help_text=_("For how long (in days)?"),
     )
     accommodation_length = models.CharField(  # legacy
         max_length=1024,
+        blank=True,
         verbose_name=_("Accommodation length"),
         help_text=_("For how long can you provide the accomodation?"),
     )
-    languages = models.JSONField(default=empty_list_factory)
+    languages = models.JSONField(default=empty_list_factory, blank=True)
     languages_other = models.CharField(
         max_length=1024,
         null=True,
@@ -300,7 +311,7 @@ class HousingResource(TimeStampedModel):
         verbose_name=_("Languages"),
         help_text=_("Languages that the person speaks"),
     )
-    animals = models.JSONField(default=empty_list_factory)
+    animals = models.JSONField(default=empty_list_factory, blank=True)
     animals_other = models.CharField(
         max_length=512,
         null=True,
@@ -308,14 +319,15 @@ class HousingResource(TimeStampedModel):
         verbose_name=_("Other animals"),
         help_text=_("Other animals"),
     )
-    facilities = models.JSONField(default=empty_list_factory)
+    facilities = models.JSONField(default=empty_list_factory, blank=True)
     facilities_other = models.CharField(
         max_length=1024,
+        blank=True,
         null=True,
         verbose_name=_("Other facilities"),
         help_text=_("Other facilities"),
     )
-    groups = models.JSONField(default=empty_list_factory)
+    groups = models.JSONField(default=empty_list_factory, blank=True)
     details = models.TextField(
         max_length=2048,
         verbose_name=_("Details"),
@@ -671,6 +683,7 @@ class Submission(TimeStampedModel):
     current_place = models.CharField(
         choices=Place.choices,
         null=True,
+        blank=True,
         max_length=255,
         verbose_name=_("Current location"),
     )
@@ -680,35 +693,40 @@ class Submission(TimeStampedModel):
     )
     email = models.EmailField(
         unique=False,
+        blank=True,
         verbose_name=_("Email"),
         null=True
     )
-    voivodeships = models.JSONField(default=empty_list_factory)
-    members = models.JSONField(default=empty_list_factory)
+    voivodeships = models.JSONField(default=empty_list_factory, blank=True)
+    members = models.JSONField(default=empty_list_factory, blank=True)
     people = models.CharField(  # legacy but let's leave it for migration time
         max_length=128,
+        blank=True,
         verbose_name=_("The number of people"),
     )
     how_long = models.CharField(
         choices=HowLong.choices,
         null=True,
+        blank=True,
         max_length=255,
         verbose_name=_("Length of stay"),
         help_text=_("For how long (in days)?"),
     )
     how_long_other = models.CharField(  # legacy - renamed from how_long
         max_length=128,
+        blank=True,
         verbose_name=_("Length of stay"),
         help_text=_("For how long (in days)?"),
     )
-    additional_needs = models.JSONField(default=empty_list_factory)
+    additional_needs = models.JSONField(default=empty_list_factory, blank=True)
     additional_needs_other = models.CharField(
         max_length=1024,
+        blank=True,
         null=True,
         verbose_name=_("Other additional needs"),
         help_text=_("Other additional needs"),
     )
-    allergies = models.JSONField(default=empty_list_factory)
+    allergies = models.JSONField(default=empty_list_factory, blank=True)
     allergies_other = models.CharField(
         max_length=512,
         null=True,
@@ -719,6 +737,7 @@ class Submission(TimeStampedModel):
     description = models.CharField(
         max_length=2048,
         null=True,
+        blank=True,
         verbose_name=_("Description"),
         help_text=_("Description"),
     )
@@ -747,7 +766,7 @@ class Submission(TimeStampedModel):
         blank=True,
         verbose_name=_("Contact person"),
     )
-    languages = models.JSONField(default=empty_list_factory)
+    languages = models.JSONField(default=empty_list_factory, blank=True)
     languages_other = models.CharField(
         max_length=1024,
         null=True,
@@ -761,7 +780,7 @@ class Submission(TimeStampedModel):
         blank=True,
         verbose_name=_("Since when the support is needed"),
     )
-    groups = models.JSONField(default=empty_list_factory)
+    groups = models.JSONField(default=empty_list_factory, blank=True)
     groups_other = models.CharField(
         max_length=255,
         null=True,
@@ -769,7 +788,7 @@ class Submission(TimeStampedModel):
         verbose_name=_("Other groups"),
         help_text=_("Other groups"),
     )
-    plans = models.JSONField(default=empty_list_factory)
+    plans = models.JSONField(default=empty_list_factory, blank=True)
     # todo: add max length validation in forms app
     plans_other = models.CharField(
         max_length=255,
@@ -878,9 +897,7 @@ class Submission(TimeStampedModel):
         ]
 
     def save(self, *args, **kwargs):
-        if self.accomodation_in_the_future:
-            self.priority = -1
-        elif self.status == SubStatus.NEW:
+        if self.status == SubStatus.NEW:
             self.priority = 0
             if self.resource:
                 self.clear_resource()
