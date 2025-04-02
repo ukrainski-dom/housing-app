@@ -243,6 +243,7 @@ def create_resource_integration_v2(request):
         animals=json_body["animals"],
         languages=json_body["languages"],
         groups=json_body["groups"],
+        newsletter_agreement=json_body["newsletterAgreement"],
     )
     resource.save()
     return Response({"id": resource.id}, status=status.HTTP_201_CREATED)
@@ -284,7 +285,8 @@ def create_submission_integration_v2(request):
         languages=json_body["languages"],
         groups=json_body["groups"],
         plans=json_body["plans"],
-        members=[*json_body["adults"], *json_body["children"]]
+        members=[*json_body["adults"], *json_body["children"]],
+        newsletter_agreement=json_body["newsletterAgreement"],
     )
     sub.save()
     return Response({"id": sub.id}, status=status.HTTP_201_CREATED)

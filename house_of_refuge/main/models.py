@@ -334,6 +334,11 @@ class HousingResource(TimeStampedModel):
         help_text=_("A bunch of information about the place - presence of animals, languages spoken by tenants, availability of bed linen and towels, others"),
         blank=True
     )
+    newsletter_agreement = models.BooleanField(
+        null=False,
+        default=False,
+        verbose_name=_("Newsletter agreement"),
+    )
     transport = models.CharField(  # legacy
         choices=TransportRange.choices,
         max_length=16,
@@ -487,6 +492,7 @@ class HousingResource(TimeStampedModel):
             people_to_accommodate=self.people_to_accommodate,
             age=self.age,
             languages=self.languages,
+            newsletter_agreement=self.newsletter_agreement,
             when_to_call=self.when_to_call,
             costs=self.costs,
             availability=self.availability,
@@ -543,6 +549,7 @@ class HousingResource(TimeStampedModel):
             accommodation_length=HowLong.to_number_by_value(self.how_long) if self.how_long else extract_number_from_string(
                 self.accommodation_length, default=self.accommodation_length),
             details=self.details,
+            newsletter_agreement=self.newsletter_agreement,
             transport=self.transport,
             phone_number=get_phone_number_display(self.phone_number),
             backup_phone_number=get_phone_number_display(self.backup_phone_number),
@@ -804,6 +811,11 @@ class Submission(TimeStampedModel):
     transport_needed = models.BooleanField(  # legacy
         default=True,
         verbose_name=_("Transport needed"),
+    )
+    newsletter_agreement = models.BooleanField(
+        null=False,
+        default=False,
+        verbose_name=_("Newsletter agreement"),
     )
     # following fields are for logged in users
     note = models.CharField(
