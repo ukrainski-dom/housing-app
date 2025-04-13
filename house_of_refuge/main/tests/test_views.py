@@ -189,7 +189,8 @@ def test_create_submission_integration_v2_endpoint(client):
         plans=["findJobAndRentApartmentOrRoomInPoland"],
         plansOther="someOtherPlans",
         additionalInfo="someAdditionalInfo",
-        firstSubmission=True
+        firstSubmission=True,
+        newsletterAgreement=True
     )
 
     response = client.post("/api/submission", data=data, content_type="application/json")
@@ -251,7 +252,8 @@ def test_create_submission_integration_v2_endpoint_minimal_data(client):
         plans=[],
         plansOther=None,
         additionalInfo='',
-        firstSubmission=True
+        firstSubmission=True,
+        newsletterAgreement=True
     )
 
     response = client.post("/api/submission", data=data, content_type="application/json")
@@ -309,7 +311,8 @@ def test_create_housing_resource_integration_v2_endpoint(client):
             "english"
         ],
         languagesOther="someOtherLang",
-        additionalInfo="someAdditionalInfo"
+        additionalInfo="someAdditionalInfo",
+        newsletterAgreement=True,
     )
 
     response = client.post("/api/housing_resource", data=data, content_type="application/json")
@@ -363,7 +366,8 @@ def test_create_housing_resource_integration_v2_endpoint_minimal_data(client):
         animalsOther=None,
         languages=[],
         languagesOther=None,
-        additionalInfo=''
+        additionalInfo='',
+        newsletterAgreement=True,
     )
 
     response = client.post("/api/housing_resource", data=data, content_type="application/json")
