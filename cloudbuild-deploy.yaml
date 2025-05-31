@@ -1,20 +1,15 @@
 steps:
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t',
-           'europe-central2-docker.pkg.dev/${PROJECT_ID}/apps/mieszkania-app:${SHORT_SHA}',
-           '.']
-
+    entrypoint: 'bash'
+    args: ['-c', 'docker login --username=raphaelsolarski --password=$$PASSWORD ghcr.io']
+    secretEnv: ['PASSWORD']
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['push',
-           'europe-central2-docker.pkg.dev/${PROJECT_ID}/apps/mieszkania-app:${SHORT_SHA}']
-
-  - name: 'gcr.io/cloud-builders/kubectl'
-    args:
-      - 'set'
-      - 'image'
-      - 'deployment.apps/mieszkania-app'
-      - 'mieszkania-app=europe-central2-docker.pkg.dev/${PROJECT_ID}/apps/mieszkania-app:${SHORT_SHA}'
-      - 'run-migrations=europe-central2-docker.pkg.dev/${PROJECT_ID}/apps/mieszkania-app:${SHORT_SHA}'
-    env:
-      - 'CLOUDSDK_COMPUTE_REGION=europe-central2'
-      - 'CLOUDSDK_CONTAINER_CLUSTER=mieszkania-app-cluster'
+    entrypoint: 'bash'
+    args: ['-c', 'docker build -t ghcr.io/raphaelsolarski/ukrainski-dom-forms/housing-app:${SHORT_SHA} .']
+  - name: 'gcr.io/cloud-builders/docker'
+    entrypoint: 'bash'
+    args: ['-c', 'docker push ghcr.io/raphaelsolarski/ukrainski-dom-forms/housing-app:${SHORT_SHA}']
+availableSecrets:
+  secretManager:
+    - versionName: projects/954990661549/secrets/github-container-registry-key/versions/1
+      env: 'PASSWORD'
