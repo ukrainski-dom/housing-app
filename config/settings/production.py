@@ -27,7 +27,7 @@ DATABASES["default"] = env.db("DATABASE_URL")  # noqa F405
 # DATABASES["default"]["ENGINE"] = "django_db_geventpool.backends.postgresql_psycopg2"
 # if "OPTIONS" not in DATABASES["default"]:
 DATABASES["default"]["OPTIONS"] = {
-    'sslmode': env.path('DATABASE_SSL_MODE'),
+    'sslmode': env('DATABASE_SSL_MODE'),
     'sslrootcert': env.path('DATABASE_SSL_ROOT_CERT')
 }
 # DATABASES["default"]["OPTIONS"]["MAX_CONNS"] = 20
